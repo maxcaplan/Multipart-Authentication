@@ -1,0 +1,24 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "A multipart authentication project with machine learning",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node app.js"
+  },
+  "config": {
+    "port": 8080
+  },
+  "keywords": [
+    "Auth",
+    "Authentication",
+    "Machine",
+    "Learning"
+  ],
+  "author": "Max Caplan",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
