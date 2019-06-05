@@ -86,3 +86,7 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# testing images
+testImages/*.png
+testImages/*.jpg
