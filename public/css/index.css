@@ -6,7 +6,7 @@ html, body {
 }
 
 body {
-    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/collection/573009/1600x900');
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/1920x1080/?aerial,nature');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -34,4 +34,20 @@ h1 {
     .circle-link {
         font-size: 3em;
     }
+}
+
+#videoElement {
+    /* max-width: 480px;
+    max-height: 480px;
+    width: 40vmax;
+    height: 40vmax; */
+    width: 100% !important;
+    max-width: 480px;
+    height: auto !important;
+    background: white;
+    border-radius: 12px;
+}
+
+#videoCanvas {
+    display: none;
 }

@@ -10,11 +10,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/90a18d65c3.js"></script>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body class="d-flex justify-content-center align-items-center">
-
     <div class="container shadow-lg bg-white rounded p-5">
         <div class="row">
             <div class="col">
@@ -22,10 +21,28 @@
             </div>
         </div>
         <hr>
+        <div class="row d-flex justify-content-center mb-3">
+            <div class="col-auto">
+                <video id="videoElement"></video>
+                <canvas id="videoCanvas" class="shadow"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col w-100 text-center">
+                <button id="capture" onclick="capture" class="btn btn-primary"><i class="fas fa-camera"></i>
+                    Capture</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <img id="file">
+            </div>
+        </div>
+        <hr>
         <div class="row">
             <div class="col">
                 <a class="btn btn-secondary" href="/">
-                    back
+                    <i class="fas fa-angle-left"></i> back
                 </a>
             </div>
         </div>
@@ -40,6 +57,135 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        function dataURItoBlob(dataURI) {
+            // convert base64 to raw binary data held in a string
+            // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+            var byteString = atob(dataURI.split(',')[1]);
+
+            // separate out the mime component
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+            // write the bytes of the string to an ArrayBuffer
+            var ab = new ArrayBuffer(byteString.length);
+
+            // create a view into the buffer
+            var ia = new Uint8Array(ab);
+
+            // set the bytes of the buffer to the correct values
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+
+            // write the ArrayBuffer to a blob, and you're done
+            var blob = new Blob([ab], { type: mimeString });
+            return blob;
+
+        }
+
+        (function () {
+            var width = 320;    // We will scale the photo width to this
+            var height = 0;     // This will be computed based on the input stream
+
+            var streaming = false;
+
+            var video = null;
+            var canvas = null;
+            var photo = null;
+            var button = null;
+
+            function startup() {
+                video = document.getElementById('videoElement');
+                canvas = document.getElementById('videoCanvas');
+                // photo = document.getElementById('photo');
+                button = document.getElementById('capture');
+
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                    .then(function (stream) {
+                        video.srcObject = stream;
+                        video.play();
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+
+                video.addEventListener('canplay', function (ev) {
+                    if (!streaming) {
+                        height = video.videoHeight / (video.videoWidth / width);
+
+                        if (isNaN(height)) {
+                            height = width / (4 / 3);
+                        }
+
+                        video.setAttribute('width', width);
+                        video.setAttribute('height', height);
+                        canvas.setAttribute('width', width);
+                        canvas.setAttribute('height', height);
+                        streaming = true;
+                    }
+                }, false);
+
+                button.addEventListener('click', function (ev) {
+                    takepicture();
+                    ev.preventDefault();
+                }, false);
+
+                clearphoto();
+            }
+
+            function clearphoto() {
+                var context = canvas.getContext('2d');
+                context.fillStyle = "#AAA";
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                var data = canvas.toDataURL('image/jpg');
+                // photo.setAttribute('src', data);
+            }
+
+            function takepicture() {
+                var context = canvas.getContext('2d');
+                if (width && height) {
+                    canvas.width = width;
+                    canvas.height = height;
+                    context.drawImage(video, 0, 0, width, height);
+
+                    var sendData = canvas.toDataURL('image/jpg')
+                    try {
+                        localStorage.setItem("image01", sendData);
+                    }
+                    catch (e) {
+                        console.log("Storage failed: " + e);
+                    }
+                    // document.getElementById("file").setAttribute('src', sendData);
+                    // $('#photo').val = data
+                    // photo.setAttribute('src', data);
+                    console.log("uploading data")
+
+                    // send image to database
+                    // var sendData = $('#photo').val();
+
+                    $.ajax({
+                        url: '/api/photo',    //api url
+                        type: 'POST',   //HTTP method
+                        data: {
+                            data: sendData
+                        },      //Data as js object
+                        success: function () {
+                            console.log("success")
+                        }
+                    })
+                } else {
+                    clearphoto();
+                }
+            }
+
+            // Set up our event listener to run the startup process
+            // once loading is complete.
+            window.addEventListener('load', startup, false);
+        })();
+    </script>
 </body>
 
 </html>
