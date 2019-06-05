@@ -10,76 +10,87 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/90a18d65c3.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
+        integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
     <div class="w-100 h-100 d-flex align-items-center">
-        <div class="container shadow-lg bg-white rounded px-5 py-3 my-3">
-            <div class="row">
-                <div class="col">
-                    <h1 class="display-3 text-center title">Sign Up</h1>
-                </div>
-            </div>
-            <hr>
+        <div class="row w-100 d-flex justify-content-center p-0 mx-0 my-3">
+            <div class="col signup-container col-md-6">
+                <div class="card card-main animated fadeInLeft signup border-0 shadow">
+                    <div class="card-body">
 
-            <div class="row d-flex justify-content-center">
-                <div class="col col-md-6">
-                    <div class="card signup border-0 shadow">
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="name">Name:</label>
-                                    <div class="input-group">
-                                        <input id="name" type="text" class="form-control border-0"
-                                            placeholder="John Doe">
-                                    </div>
-                                </div>
+                        <div class="row">
+                            <div class="col">
+                                <h1 class="display-3 text-center title">Sign Up</h1>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col">
-                                    <label for="videoElement">Face ID:</label>
-                                </div>
-                            </div>
-                            <div class="row mb-1">
-                                <div class="col">
-                                    <video id="videoElement"></video>
-                                    <canvas id="videoCanvas" class="shadow" width="480" height="360"></canvas>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col w-100 text-center">
-                                    <button id="capture" class="btn btn-primary"><i class="fas fa-camera"></i>
-                                        Capture</button>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="audio">Voice ID:</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div id="audio-container" class="card w-100 border-0">
-                                        <button id="audio" class="btn btn-danger">
-                                            <i class="fas fa-microphone-alt"></i>
-                                        </button>
-                                    </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="name">Name:</label>
+                                <div class="input-group">
+                                    <input id="name" type="text" class="form-control border-0" placeholder="John Doe">
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <hr>
-            <div class="row">
-                <div class="col">
-                    <a class="btn btn-secondary" href="/">
-                        <i class="fas fa-angle-left"></i> back
-                    </a>
+                        <div class="row">
+                            <div class="col">
+                                <label for="videoElement">Face ID:</label>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <video id="videoElement"></video>
+                                <canvas id="videoCanvas" class="shadow" width="480" height="360"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col w-100 text-center">
+                                <button id="capture" class="btn btn-primary"><i
+                                        class="fas fa-camera fa-2x"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="audio">Voice ID:</label>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div id="audio-container" class="card w-100 border-0">
+                                    <button id="audio" class="text-light">
+                                        <i class="fas fa-microphone-alt fa-2x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col text-center">
+                                <a class="btn btn-secondary" href="/">
+                                    <i class="fas fa-arrow-left"></i> back
+                                </a>
+                            </div>
+                            <div class="col text-center">
+                                <div class="btn btn-primary">
+                                    submit <i class="fas fa-paper-plane"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>

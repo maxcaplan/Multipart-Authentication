@@ -15,10 +15,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Nunito', sans-serif;
     font-weight: bold;
+    font-display: auto;
 }
 
 * {
     font-family: 'Montserrat', sans-serif;
+    font-display: auto;
 }
 
 .title {
@@ -44,7 +46,6 @@ h1, h2, h3, h4, h5, h6 {
     width: 40vmax;
     height: 40vmax; */
     width: 100% !important;
-    max-width: 480px;
     height: auto !important;
     background: white;
     border-radius: 12px;
@@ -57,14 +58,26 @@ h1, h2, h3, h4, h5, h6 {
 #audio {
     border-radius: 40px;
     width: 100%;
-    font-size: 3em;
+    padding: 10px;
+    border: none;
+    background-size: 200% auto;
+    background-image: linear-gradient(120deg, #FF5A5F 0%, #F2A541 100%);
+    transition: 0.5s;
 }
 
-.signup {
+#audio:hover {
+    background-position: right center;
+}
+
+.card-main {
     border-radius: 12px;
 }
 
 .signup input {
     background: #e7e7e7;
     border-radius: 50px;
+}
+
+.signup-container {
+    max-width: 600px;
 }

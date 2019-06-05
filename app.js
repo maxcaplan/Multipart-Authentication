@@ -28,4 +28,8 @@ app.post('/api/photo', function (req, res) {
     res.send("done")
 });
 
+app.get('*', function (req, res) {
+    res.send('page not found');
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`))   
