@@ -53,7 +53,9 @@ validation_generator = validation_datagen.flow_from_directory(
 #Model Building#
 ################
 
+# check if input model exists
 if(args['model'] == None):
+    #create new model
     IMG_SHAPE = (image_size, image_size, 3)
 
     # Create the base model from the pre-trained model MobileNet V2
@@ -79,6 +81,7 @@ if(args['model'] == None):
                   metrics=['accuracy'])
 
 else: 
+    # load input model
     model = tf.keras.models.load_model(str(args['model']))
 
 print("NEW MODEL")
