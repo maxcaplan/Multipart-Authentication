@@ -9,12 +9,29 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/90a18d65c3.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 
-<body>
-    <div class="container">
-        <h1 class="display-3 text-center">Authentication</h1>
+<body class="d-flex justify-content-center align-items-center">
+
+    <div class="container shadow-lg bg-white rounded p-5">
+        <div class="row">
+            <div class="col">
+                <h1 class="display-3 text-center title">Authentication</h1>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col text-center mb-3">
+                <button href="./signup.html" class="circle-btn btn btn-primary" data-toggle="tooltip"
+                    data-placement="top" title="Sign Up"><i class="fas fa-pencil-alt"></i></button>
+            </div>
+            <div class="col text-center">
+                <button href="./login.html" class="circle-btn btn btn-primary" data-toggle="tooltip"
+                    data-placement="top" title="Login"><i class="fas fa-user"></i></button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -26,6 +43,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+        });
+    </script>
 </body>
 
 </html>
