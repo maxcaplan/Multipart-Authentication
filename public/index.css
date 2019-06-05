@@ -28,14 +28,10 @@ h1 {
 }
 
 @media only screen and (max-width: 680px) {
-
-    .title { 
-       font-size: 2em; 
+    .title {
+        font-size: 2em;
     }
-
     .circle-link {
         font-size: 3em;
     }
- 
- }
-
+}
