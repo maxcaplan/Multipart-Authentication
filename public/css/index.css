@@ -1,19 +1,24 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Nunito');
 html, body {
     height: 100%;
     width: 100%;
     margin: 0;
+    display: table;
 }
 
 body {
     background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/1920x1080/?aerial,nature');
     background-position: center;
     background-size: cover;
-    background-repeat: no-repeat;
 }
 
-h1 {
-    font-family: 'Open Sans', sans-serif;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+}
+
+* {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .title {
@@ -31,9 +36,6 @@ h1 {
     .title {
         font-size: 2em;
     }
-    .circle-link {
-        font-size: 3em;
-    }
 }
 
 #videoElement {
@@ -50,4 +52,19 @@ h1 {
 
 #videoCanvas {
     display: none;
+}
+
+#audio {
+    border-radius: 40px;
+    width: 100%;
+    font-size: 3em;
+}
+
+.signup {
+    border-radius: 12px;
+}
+
+.signup input {
+    background: #e7e7e7;
+    border-radius: 50px;
 }
