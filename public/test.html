@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- If you found yourself here by accident, congrats ヽ(^。^)ノ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container shadow bg-dark my-3 p-5" style="border-radius:12px;">
+        <h1 class="text-center text-light">Test Form</h1>
+
+        <hr>
+        <form action="/api/test" method="POST">
+            <div class="row mb-3 d-flex justify-content-center">
+                <div class="col-md-6">
+                    <input class="form-control" type="text" placeholder="name" name="name" required>
+                </div>
+            </div>
+            <div class="row mb-3 d-flex justify-content-center">
+                <div class="col-md-6">
+                    <input class="form-control" type="password" placeholder="password" name="password" required>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6">
+                    <button class="btn btn-block btn-outline-success" type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6">
+                <button class="btn btn-block btn-outline-info" onclick="fetchData()">
+                    Get
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script>
+        function fetchData() {
+            console.log("fetching data")
+
+            $.ajax({
+                url: "/api/test/get",
+                type: "GET",
+                success: function (res) {
+                    console.log("success")
+                    console.log(res)
+                    renderResults(res)
+                }
+            })
+        }
+
+        function renderResults(arr) {
+            let container = $("body").append("<div id='list-cont' class='container shadow bg-dark my-3 p-5' style='border-radius:12px;'></div>")
+            let list = "<ul class='list-group'>"
+            for (let i = 0; i < arr.length; i++) {
+                list += "<li class='list-group-item'>ID: " +  arr[i]._id + "<br> Name: " + arr[i].name + "<br> Password: " + arr[i].password + "</li>"
+            }
+            $("#list-cont").html(list)
+        }
+    </script>
+</body>
+
+</html>
