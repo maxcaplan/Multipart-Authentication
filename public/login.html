@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Login</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
         integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/login.js"></script>
 </head>
 
 <body class="d-flex justify-content-center align-items-center">
 
     <div class="w-100 h-100 d-flex align-items-center">
         <div class="row w-100 d-flex justify-content-center p-0 mx-0 my-3">
-            <div class="col col-md-8">
+            <div class="col ui-container col-md-8">
                 <div class="card animated fadeIn card-main border-0 shadow">
                     <div class="card-body">
                         <div class="row">
@@ -28,13 +29,44 @@
                             </div>
                         </div>
                         <hr>
+
                         <div class="row mb-3">
                             <div class="col">
-                                <a class="btn btn-secondary" href="/">
-                                    <i class="fas fa-angle-left"></i> back
-                                </a>
+                                <label for="name">Username:</label>
+                                <div class="input-group">
+                                    <input id="name" type="text" class="form-control border-0" placeholder="John Doe"
+                                        data-toggle="tooltip" data-placement="top" title="Username too short">
+                                </div>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <label for="videoElement">Face ID:</label>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <video id="videoElement"></video>
+                                <canvas id="videoCanvas" class="shadow" width="480" height="360"></canvas>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="row mb-3">
+                            <div class="col text-center">
+                                <a class="btn btn-secondary" href="/">
+                                    <i class="fas fa-arrow-left"></i> back
+                                </a>
+                            </div>
+                            <div class="col text-center">
+                                <button id="upload" class="btn btn-primary">
+                                    Login <i class="fas fa-sign-in-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col text-center">
                                 <i class="text-muted small">By <a href="https://github.com/jellycream"
