@@ -1,7 +1,7 @@
 # Multi-part Authentication
 
 An experiment with multi-part authentication using machine learning 
-## Instilation
+## Installation
 
 Use the package manager [npm](https://www.npmjs.com) to install any dependency.
 
