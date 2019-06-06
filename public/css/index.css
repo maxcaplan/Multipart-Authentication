@@ -24,7 +24,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .title {
-    font-size: 4em
+    font-size: 3em
 }
 
 .circle-btn {
@@ -41,10 +41,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #videoElement {
-    /* max-width: 480px;
-    max-height: 480px;
-    width: 40vmax;
-    height: 40vmax; */
     width: 100% !important;
     height: auto !important;
     background: white;
@@ -52,6 +48,35 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #videoCanvas {
+    display: none;
+}
+
+#flash {
+    position: absolute;
+    width: calc(100% - 30px) !important;
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0);
+    border-radius: 12px;
+}
+
+.show {
+    animation: flash 0.5s ease 0s 1 normal forwards;
+}
+
+@keyframes flash {
+    0% {
+        background: rgba(255, 255, 255, 1)
+    }
+    100% {
+        background: rgb(255, 255, 255, 0)
+    }
+}
+
+#flash .show {
+    display: none;
+}
+
+#flash .hide {
     display: none;
 }
 
@@ -73,11 +98,11 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 12px;
 }
 
-.signup input {
+#name {
     background: #e7e7e7;
     border-radius: 50px;
 }
 
-.signup-container {
+.ui-container {
     max-width: 600px;
 }
