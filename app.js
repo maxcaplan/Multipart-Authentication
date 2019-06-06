@@ -1,35 +1,63 @@
 const express = require('express')
+const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const fs = require('fs')
 
 const app = express()
-const port = process.env.npm_package_config_myPort || 8080
+const port = process.env.npm_package_config_port || 8080
 
 // app.get('/', (req, res) => res.send('Hello World!'))
 
 app.use(express.static('public'))
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
+var db
 
-app.post('/api/photo', function (req, res) {
-    if (req.body.data == false) {
-        return res.status(400).send('No files were uploaded.');
-    }
+MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authentication-m7xcq.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true }, (err, client) => {
+    if (err) return console.log(err)
+    db = client.db('multipart-authentication')
 
-    var string = req.body.data
-    var regex = /^data:.+\/(.+);base64,(.*)$/;
+    app.post('/api/photo', function (req, res) {
+        if (req.body.data == false) {
+            return res.status(400).send('No files were uploaded.');
+        }
 
-    var matches = string.match(regex);
-    var ext = matches[1];
-    var data = matches[2];
-    var buffer = Buffer.from(data, 'base64');
-    fs.writeFileSync('testImages/' + Date.now() + '.' + ext, buffer);
+        var string = req.body.data
+        var regex = /^data:.+\/(.+);base64,(.*)$/;
 
-    res.send("done")
-});
+        var matches = string.match(regex);
+        var ext = matches[1];
+        var data = matches[2];
+        var buffer = Buffer.from(data, 'base64');
+        fs.writeFileSync('testImages/' + Date.now() + '.' + ext, buffer);
 
-app.get('*', function (req, res) {
-    res.send('page not found');
-});
+        res.send("done")
+    });
 
-app.listen(port, () => console.log(`Listening on port ${port}`))   
+    // Test write to database
+    app.post('/api/test', function (req, res) {
+        db.collection('test').insertOne(req.body, (err, result) => {
+            if (err) return console.log(err)
+
+            console.log('saved to database')
+            res.redirect('/')
+        })
+    })
+
+    // Test fetch from database 
+    app.get('/api/test/get', function (req, res) {
+        console.log("fetching from database")
+        db.collection('test').find().toArray(function (err, results) {
+            if(err) return console.log(err)
+            
+            res.send(results)
+        })
+    })
+
+    app.get('*', function (req, res) {
+        // res.send('page not found');
+        res.redirect('/')
+    });
+
+    app.listen(port, () => console.log(`Listening on port ${port}`))
+})
