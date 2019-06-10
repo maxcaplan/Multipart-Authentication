@@ -1,0 +1,19 @@
+{
+    "name": "Multi-Auth",
+    "short_name": "Multi-Auth",
+    "icons": [
+        {
+            "src": "/assets/icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#6d6897",
+    "background_color": "#6d6897",
+    "display": "standalone"
+}
