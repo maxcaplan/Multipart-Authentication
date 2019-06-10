@@ -24,7 +24,67 @@
 </head>
 
 <body>
-    <div class="container shadow bg-dark my-3 p-5" style="border-radius:12px;">
+    <div class="container text-center shadow bg-dark my-3 p-5 text-light">
+        <h1>Test Facial Recognition</h1>
+        <div class="row">
+            <div class="col">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="customCheck1">
+                    <label class="custom-control-label" for="customCheck1">Active</label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <h3>Input: </h3>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col d-flex justify-content-center">
+                <div class="progress" style="width: 500px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <video autoplay="true" id="videoElement"></video>
+                <canvas id="cropElement"></canvas>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h3>Output: </h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <canvas id="canvasElement"></canvas>
+                <canvas id="cropElement"></canvas>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-center">
+                <button class="btn btn-primary" onclick="capture()">Capture</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col">
+                <h3>Captures: </h3>
+            </div>
+        </div>
+
+        <div id="captures"></div>
+    </div>
+
+    <div class="container shadow bg-dark my-3 p-5">
         <h1 class="text-center text-light">Test Form</h1>
 
         <hr>
@@ -57,8 +117,95 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+    <script src="./js/face-api.min.js"></script>
 
     <script>
+        var input = document.querySelector("#videoElement");
+        var output = document.querySelector("#canvasElement");
+        var crop = document.querySelector("#cropElement")
+        var results
+
+        // Load models from folder
+        async function loadModel() {
+            console.log("loading models")
+            await faceapi.loadSsdMobilenetv1Model("/models")
+            console.log("mobile net loaded")
+            $(".progress-bar").width("50%")
+            await faceapi.loadTinyFaceDetectorModel("/models")
+            console.log("tiny face loaded")
+            $(".progress-bar").width("100%")
+            return
+        }
+
+        // Detect faces in video stream
+        async function detectFaces() {
+            return await faceapi.tinyFaceDetector(input)
+        }
+
+        input.onloadeddata = () => {
+            loadModel().then((res) => {
+                setInterval(() => {
+                    if (document.querySelector("#customCheck1").checked) {
+                        detectFaces().then((faces) => {
+                            results = faces
+                            let ctx = output.getContext('2d')
+                            let rect = input.getBoundingClientRect()
+                            output.width = rect.width
+                            output.height = rect.height
+                            ctx.drawImage(input, 0, 0, rect.width, rect.height)
+                            if (results.length > 0) {
+                                for (result of results) {
+                                    result = faceapi.resizeResults(result, { width: rect.width, height: rect.height })
+
+                                    faceapi.draw.drawDetections(output, result)
+                                    // let box = result.box
+                                    // ctx.strokeStyle = "red";
+                                    // ctx.rect(box.x, box.y, box.width, box.height)
+                                    // ctx.stroke()
+                                }
+                            }
+                        })
+                    }
+                }, 25)
+            })
+        }
+
+        function capture() {
+            if (results.length > 0) {
+                let ctx2 = crop.getContext("2d")
+                let rect = input.getBoundingClientRect()
+                let resize = faceapi.resizeResults(results[0], { width: rect.width, height: rect.height })
+
+                let bW = resize.box.width
+                let bH = resize.box.height
+
+                if (bW > bH) {
+                    crop.width = bW;
+                    crop.height = bW;
+                } else {
+                    crop.width = bH;
+                    crop.height = bH;
+                }
+
+                ctx2.drawImage(input, -resize.box.x, -resize.box.y, rect.width, rect.height)
+                let data = crop.toDataURL('image/jpg')
+                let img = document.createElement("IMG");
+                img.src = data
+                document.querySelector("#captures").append(img)
+            }
+        }
+
+        // Webcam Code
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    console.log("streaming webcam")
+                    input.srcObject = stream;
+                })
+        }
+
+        // Database Code
         function fetchData() {
             console.log("fetching data")
 
@@ -74,7 +221,7 @@
         }
 
         function renderResults(arr) {
-            let container = $("body").append("<div id='list-cont' class='container shadow bg-dark my-3 p-5' style='border-radius:12px;'></div>")
+            let container = $("body").append("<div id='list-cont' class='container shadow bg-dark my-3 p-5'></div>")
             let list = "<ul class='list-group'>"
             for (let i = 0; i < arr.length; i++) {
                 list += "<li class='list-group-item'>ID: " + arr[i]._id + "<br> Name: " + arr[i].name + "<br> Password: " + arr[i].password + "</li>"
@@ -82,6 +229,33 @@
             $("#list-cont").html(list)
         }
     </script>
+
+    <style>
+        .container {
+            border-radius: 12px;
+        }
+
+        #videoElement,
+        #canvasElement,
+        #cropElement {
+            width: 500px;
+            height: 375px;
+            border-radius: 12px;
+            background: white;
+        }
+
+        #cropElement {
+            width: 480px;
+            height: 480px;
+            display: none;
+        }
+
+        #captures img {
+            width: 160px;
+            border-radius: 12px;
+            margin: 3px;
+        }
+    </style>
 </body>
 
 </html>
