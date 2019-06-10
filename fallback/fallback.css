@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Nunito');
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    display: table;
+}
+
+body {
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/1920x1080/?aerial,nature');
+    background-position: center;
+    background-size: cover;
+}
+
+h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    font-display: auto;
+}
+
+.alert {
+    border-radius: 12px;
+}
