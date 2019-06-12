@@ -83,33 +83,35 @@
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <video id="videoElement"></video>
-                                <div id="flash"></div>
-                                <canvas id="videoCanvas" class="shadow" width="480" height="360"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
                             <div class="col">
-                                <div class="progress w-100">
-                                    <div id="progress"
-                                        class="progress-bar bg-info progress-bar-striped progress-bar-animated"
-                                        role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
-                                        style="width: 0%" placeholder="John Doe">
-                                    </div>
-                                    <span id="count" class="font-weight-bold w-100 text-center"
-                                        style="position: absolute" data-toggle="tooltip" data-placement="top"
-                                        title="Not enough images">0/10 Images</span>
+                                <div id="loadWrapper" class="progress text-center">
+                                    <div id="modelLoad" class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                        style="width: 0%"></div>
+                                    <span id="loadLabel" class="font-weight-bold w-100 text-center"
+                                        style="position: absolute">Loading Model...</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col w-100 text-center">
-                                <button id="capture" class="btn btn-info"><i class="fas fa-camera fa-2x"></i></button>
+                        <div class="collapse" id="faceID">
+                            <div class="row mb-2">
+                                <div class="col d-flex justify-content-center align-items-center">
+                                    <video id="videoElement"></video>
+                                    <div id="flash"></div>
+                                    <canvas id="videoCanvas" class="shadow" width="480" height="360"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col w-100 text-center">
+                                    <button id="capture" class="btn btn-info" data-toggle="tooltip" data-placement="top"
+                                        title="Not enough images">Start Scanning Face</button>
+                                </div>
                             </div>
                         </div>
+
+
 
                         <div class="row">
                             <div class="col-md-6">
@@ -155,6 +157,7 @@
         </div>
     </div>
 
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
@@ -162,6 +165,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+    <script src="./js/face-api.min.js"></script>
 
     <script src="js/signup.js"></script>
 </body>
