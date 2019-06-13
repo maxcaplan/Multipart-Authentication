@@ -75,7 +75,7 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                         var ext = matches[1];
                         var data = matches[2];
                         var buffer = Buffer.from(data, 'base64');
-                        if (i > 6) {
+                        if (i > 14) {
                             fs.writeFileSync(validationDir + "user/" + req.body.name + i + '.' + ext, buffer);
                         } else {
                             fs.writeFileSync(trainDir + "user/" + req.body.name + i + '.' + ext, buffer);

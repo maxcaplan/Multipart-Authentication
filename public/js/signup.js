@@ -13,7 +13,7 @@ var uploadBtn = null;
 var load = null
 
 var pictures = []
-
+var pNum = 20
 
 function startup() {
     // get page elements
@@ -89,7 +89,7 @@ function startup() {
                 collapse.collapse('show')
             }).then(() => {
                 setInterval(() => {
-                    if (capturing && pictures.length < 10) {
+                    if (capturing && pictures.length < pNum) {
 
                         // Capture frame of video
                         let frame = document.createElement("canvas")
@@ -111,7 +111,7 @@ function startup() {
                                     .then((image) => {
                                         pictures.push(image)
 
-                                        captureBtn.html(pictures.length + "/10 Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
 
                                         flash.removeClass('show');
                                         flash.addClass('show')
@@ -128,7 +128,7 @@ function startup() {
                         })
                     }
 
-                    if (pictures.length >= 10) {
+                    if (pictures.length >= pNum) {
                         capturing = false
                         captureBtn.html("Done!")
                         captureBtn.attr("disabled", true);
@@ -141,7 +141,7 @@ function startup() {
     captureBtn.click(function (ev) {
         capturing = !capturing
         if (capturing) {
-            captureBtn.html(pictures.length + "/10 Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
         } else {
             captureBtn.html("Start Scanning Face")
         }
@@ -216,7 +216,7 @@ function upload() {
         })
     }
 
-    if (pictures.length < 10) {
+    if (pictures.length < pNum) {
         captureBtn.tooltip('enable')
         captureBtn.tooltip('show')
         errors = true

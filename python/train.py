@@ -20,8 +20,8 @@ print(args)
 #Image Processing#
 ##################
 
-train_dir = "./training_images/train"
-validation_dir = "./training_images/validation"
+train_dir = "../users/Max Caplan/training"
+validation_dir = "../users/Max Caplan/validation"
 
 print('Total training images: ' + str(len(os.listdir(train_dir))))
 print('Total validation images: ' + str(len(os.listdir(validation_dir))))
@@ -55,7 +55,7 @@ validation_generator = validation_datagen.flow_from_directory(
 
 # check if input model exists
 if(args['model'] == None):
-    #create new model
+    # create new model
     IMG_SHAPE = (image_size, image_size, 3)
 
     # Create the base model from the pre-trained model MobileNet V2
@@ -80,7 +80,7 @@ if(args['model'] == None):
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
-else: 
+else:
     # load input model
     model = tf.keras.models.load_model(str(args['model']))
 
@@ -95,7 +95,7 @@ print("\n")
 if(args["epochs"] == None):
     epochs = 10
 else:
-    epochs = args["epochs"]
+    epochs = int(args["epochs"])
 
 steps_per_epoch = train_generator.n
 validation_steps = validation_generator.n
@@ -110,7 +110,7 @@ history = model.fit_generator(train_generator,
 
 if(args['model'] == None):
     date = time.time()
-    model.save('./models/max' + str(date) + '.h5')
+    model.save('../models/max' + str(date) + '.h5')
 else:
     model.save(args['model'])
 

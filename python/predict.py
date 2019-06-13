@@ -20,10 +20,13 @@ print("model loaded!")
 model.summary()
 
 # get random image and process
-folder = random.choice(os.listdir("./training_images/validation/"))
-file = random.choice(os.listdir("./training_images/validation/" + folder))
+folder = random.choice(os.listdir("../users/Max Caplan/validation/"))
+file = random.choice(os.listdir("../users/Max Caplan/validation/" + folder))
 
-image = cv2.imread("./training_images/validation/" + folder + "/" + file)
+print(file)
+
+image = cv2.imread("../users/Max Caplan/validation/" + folder + "/" + file)
+print(image)
 resize = cv2.resize(image, (160, 160))
 cv2.imshow('image',image)
 image = np.expand_dims(resize, axis=0)
@@ -41,10 +44,10 @@ while predicting:
         predicting = False
     if(key == 32):
         print("~Getting new image~")
-        folder = random.choice(os.listdir("./training_images/validation/"))
-        file = random.choice(os.listdir("./training_images/validation/" + folder))
+        folder = random.choice(os.listdir("../users/Max Caplan/validation/"))
+        file = random.choice(os.listdir("../users/Max Caplan/validation/" + folder))
 
-        image = cv2.imread("./training_images/validation/" + folder + "/" + file)
+        image = cv2.imread("../users/Max Caplan/validation/" + folder + "/" + file)
         resize = cv2.resize(image, (160, 160))
         cv2.imshow('image',image)
         image = np.expand_dims(resize, axis=0)
