@@ -104,11 +104,13 @@ function startup() {
                         detectFaces(frame).then((result) => {
                             // check if face is detected
                             if (result.data.length > 0) {
-                                console.log("face detected")
+                                $("#status").addClass("text-success")
+                                $("#status").removeClass("text-danger")
+                                $("#status").html("Face Detected")
                                 crop(result.image.toDataURL('image/jpg'), result.data[0])
                                     .then((image) => {
                                         pictures.push(image)
-                                        
+
                                         captureBtn.html(pictures.length + "/10 Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
 
                                         flash.removeClass('show');
@@ -118,6 +120,10 @@ function startup() {
                                                 flash.removeClass('show');
                                             });
                                     })
+                            } else {
+                                $("#status").removeClass("text-success")
+                                $("#status").addClass("text-danger")
+                                $("#status").html("Face Not Detected")
                             }
                         })
                     }
@@ -241,12 +247,14 @@ function upload() {
                             name: name.val()
                         },
                         success: function (response) {
+                            console.log(response)
                             location.assign("/")
                         }
                     })
                 }
             },
             error: function (exception) {
+                console.log(exception)
                 let msg = exception.responseJSON.error
 
                 document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"

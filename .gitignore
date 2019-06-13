@@ -90,6 +90,3 @@ typings/
 # testing images
 testImages/*.png
 testImages/*.jpg
-
-training/
-validation/

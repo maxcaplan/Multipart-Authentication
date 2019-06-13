@@ -2,6 +2,9 @@ const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const ncp = require('ncp')
+
+ncp.limit = 20
 
 const app = express()
 const port = process.env.npm_package_config_port || 8080
@@ -50,14 +53,18 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                 if (err) return console.log(err)
 
                 if (results == false) {
-                    let trainDir = "training/users/" + req.body.name + "/"
-                    let validationDir = "validation/users/" + req.body.name + "/"
-                    if (!fs.existsSync(trainDir)) {
-                        fs.mkdirSync(trainDir)
-                    }
+                    let parentDir = "./users/" + req.body.name + "/"
+                    let trainDir = parentDir + "training/"
+                    let validationDir = parentDir + "validation/"
 
-                    if (!fs.existsSync(validationDir)) {
+                    if (!fs.existsSync(parentDir)) {
+                        fs.mkdirSync(parentDir)
                         fs.mkdirSync(validationDir)
+                        fs.mkdirSync(trainDir)
+                        fs.mkdirSync(validationDir + "user/")
+                        fs.mkdirSync(trainDir + "user/")
+                        fs.mkdirSync(validationDir + "not/")
+                        fs.mkdirSync(trainDir + "not/")
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {
@@ -69,13 +76,26 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                         var data = matches[2];
                         var buffer = Buffer.from(data, 'base64');
                         if (i > 6) {
-                            fs.writeFileSync(validationDir + req.body.name + i + '.' + ext, buffer);
+                            fs.writeFileSync(validationDir + "user/" + req.body.name + i + '.' + ext, buffer);
                         } else {
-                            fs.writeFileSync(trainDir + req.body.name + i + '.' + ext, buffer);
+                            fs.writeFileSync(trainDir + "user/" + req.body.name + i + '.' + ext, buffer);
                         }
                     }
 
-                    res.send('done')
+                    // add none user images to training and validation
+                    ncp("./randomImages", trainDir + "not/", (err) => {
+                        if (err) {
+                            res.send(err)
+                        } else {
+                            ncp("./randomImages", validationDir + "not/", (err) => {
+                                if (err) {
+                                    res.send(err)
+                                } else {
+                                    res.send('done')
+                                }
+                            })
+                        }
+                    })
                 } else {
                     res.status(409).send("account already exists")
                 }
