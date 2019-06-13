@@ -1,27 +1,20 @@
 import tensorflow as tf
 import os
 import time
+import sys
+import json
 import argparse
 import matplotlib.pyplot as plt
 
-print("TensorFlow version is " + str(tf.__version__))
-
-ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", required=False,
-                help="Path to an existing model to continue training")
-ap.add_argument("-e", "--epochs", required=False,
-                help="number of training epochs (defaults to 10)")
-
-args = vars(ap.parse_args())
-
-print(args)
+lines = sys.stdin.readline()
+data = json.loads(lines)
 
 ##################
 #Image Processing#
 ##################
 
-train_dir = "../users/Max Caplan/training"
-validation_dir = "../users/Max Caplan/validation"
+train_dir = str(data['trainingDir'])
+validation_dir = str(data["validationDir"])
 
 print('Total training images: ' + str(len(os.listdir(train_dir))))
 print('Total validation images: ' + str(len(os.listdir(validation_dir))))
@@ -54,7 +47,7 @@ validation_generator = validation_datagen.flow_from_directory(
 ################
 
 # check if input model exists
-if(args['model'] == None):
+if(data['model'] == None):
     # create new model
     IMG_SHAPE = (image_size, image_size, 3)
 
@@ -65,9 +58,9 @@ if(args['model'] == None):
 
     # freeze base model
     base_model.trainable = False
-    print("BASE MODEL:")
-    base_model.summary()
-    print("\n")
+    # print("BASE MODEL:")
+    # base_model.summary()
+    # print("\n")
 
     # new model built from base model
     model = tf.keras.Sequential([
@@ -82,20 +75,22 @@ if(args['model'] == None):
 
 else:
     # load input model
-    model = tf.keras.models.load_model(str(args['model']))
+    model = tf.keras.models.load_model(str(data['model']))
 
-print("NEW MODEL")
-model.summary()
-print("\n")
+# print("NEW MODEL")
+# model.summary()
+# print("\n")
 
 
 ##########
 #Training#
 ##########
-if(args["epochs"] == None):
+
+# Start with training the model with the base model frozen
+if(data["epochs"] == None):
     epochs = 10
 else:
-    epochs = int(args["epochs"])
+    epochs = int(data["epochs"])
 
 steps_per_epoch = train_generator.n
 validation_steps = validation_generator.n
@@ -108,36 +103,63 @@ history = model.fit_generator(train_generator,
                               validation_steps=validation_steps)
 
 
-if(args['model'] == None):
+# Tune the model by training with base model unfrozen
+base_model.trainable = True
+
+# Fine tune from this layer onwards
+fine_tune_at = 100
+
+# Freeze all the layers before the `fine_tune_at` layer
+for layer in base_model.layers[:fine_tune_at]:
+    layer.trainable = False
+
+model.compile(loss='binary_crossentropy',
+              optimizer=tf.keras.optimizers.RMSprop(lr=2e-5),
+              metrics=['accuracy'])
+
+tuneHistory = model.fit_generator(train_generator,
+                                  steps_per_epoch=steps_per_epoch,
+                                  epochs=epochs,
+                                  workers=4,
+                                  validation_data=validation_generator,
+                                  validation_steps=validation_steps)
+# save the model to the appropiate directory
+if(data['model'] == None):
     date = time.time()
-    model.save('../models/max' + str(date) + '.h5')
+    print("saving new model to: ../models/" +
+          str(data['name']) + "/" + str(date) + '.h5')
+    os.makedirs("./models/" + str(data['name']) + "/")
+    model.save('./models/' + str(data['name']) + "/" + str(date) + '.h5')
 else:
-    model.save(args['model'])
+    model.save(data['model'])
+
 
 ##########
 #Plotting#
 ##########
+if data['plot']:
+    acc = history.history['acc']
+    val_acc = history.history['val_acc']
 
-acc = history.history['acc']
-val_acc = history.history['val_acc']
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
 
-loss = history.history['loss']
-val_loss = history.history['val_loss']
+    plt.figure(figsize=(8, 8))
+    plt.subplot(2, 1, 1)
+    plt.plot(acc, label='Training Accuracy')
+    plt.plot(val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.ylabel('Accuracy')
+    plt.ylim([min(plt.ylim()), 1])
+    plt.title('Training and Validation Accuracy')
 
-plt.figure(figsize=(8, 8))
-plt.subplot(2, 1, 1)
-plt.plot(acc, label='Training Accuracy')
-plt.plot(val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.ylabel('Accuracy')
-plt.ylim([min(plt.ylim()), 1])
-plt.title('Training and Validation Accuracy')
+    plt.subplot(2, 1, 2)
+    plt.plot(loss, label='Training Loss')
+    plt.plot(val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.ylabel('Cross Entropy')
+    plt.ylim([0, max(plt.ylim())])
+    plt.title('Training and Validation Loss')
+    plt.show()
 
-plt.subplot(2, 1, 2)
-plt.plot(loss, label='Training Loss')
-plt.plot(val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.ylabel('Cross Entropy')
-plt.ylim([0, max(plt.ylim())])
-plt.title('Training and Validation Loss')
-plt.show()
+print("done")

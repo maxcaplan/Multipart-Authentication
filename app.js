@@ -1,6 +1,7 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
+const { PythonShell } = require("python-shell");
 const fs = require('fs')
 const ncp = require('ncp')
 
@@ -8,8 +9,13 @@ ncp.limit = 20
 
 const app = express()
 const port = process.env.npm_package_config_port || 8080
-
 // app.get('/', (req, res) => res.send('Hello World!'))
+
+let test = new PythonShell('./python/test.py')
+
+test.on('message', (message) => {
+    console.log(message)
+})
 
 var db
 
@@ -44,7 +50,7 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
         })
 
 
-        app.post('/api/photo', function (req, res) {
+        app.post('/api/data', function (req, res) {
             if (req.body.data == false) {
                 return res.status(400).send('No files were uploaded.');
             }
@@ -91,7 +97,16 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                                 if (err) {
                                     res.send(err)
                                 } else {
-                                    res.send('done')
+                                    let trainShell = new PythonShell('./python/train.py')
+                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 20, plot: false, model: null }))
+                                    trainShell.on('message', (message) => {
+                                        if (message == 'done') {
+                                            console.log("training complete")
+                                            res.send("done")
+                                        } else {
+                                            console.log(message)
+                                        }
+                                    })
                                 }
                             })
                         }

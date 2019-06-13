@@ -231,7 +231,7 @@ function upload() {
 
         // send image to server
         $.ajax({
-            url: '/api/photo',    //api url
+            url: '/api/data',    //api url
             type: 'POST',   //HTTP method
             data: {
                 name: name.val(),
