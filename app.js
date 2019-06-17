@@ -88,9 +88,7 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
         app.post('/api/voice', function(req, res){
             //let pyshell = new PythonShell('./voice-identifier/add_voice.py')
             console.log(req.body);
-
             fs.writeFileSync('audio.wav', Buffer.from(req.body.data.replace('data:audio/wav;base64,', ''), 'base64'));
-
             res.send("done")
         })
 
@@ -122,7 +120,10 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                         fs.mkdirSync(trainDir + "user/")
                         fs.mkdirSync(validationDir + "not/")
                         fs.mkdirSync(trainDir + "not/")
+                        fs.mkdirSync(parentDir + "audio/")
                     }
+
+                    fs.writeFileSync(parentDir + 'audio/audio.wav', Buffer.from(req.body.audio.replace('data:audio/wav;base64,', ''), 'base64'));
 
                     for (let i = 0; i < req.body.data.length; i++) {
                         var string = req.body.data[i]

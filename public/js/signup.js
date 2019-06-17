@@ -13,7 +13,6 @@ var switchBtn = null;
 var uploadBtn = null;
 var audioBtn = null;
 var load = null
-var submitAudio = null;
 
 var pictures = []
 var constraints = null;
@@ -32,7 +31,6 @@ function startup() {
     uploadBtn = document.getElementById('upload');
     audioBtn  = document.getElementById("audio");
     load = $('#modelLoad')
-    submitAudio = document.getElementById('submitAudio');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -42,27 +40,6 @@ function startup() {
         .catch(function (err) {
             console.log("An error occurred: " + err);
         });
-
-    submitAudio.addEventListener('click', function(ev) {
-        var reader = new window.FileReader();
-        reader.readAsDataURL(audioblob);
-        reader.onloadend = function(){
-            $.ajax({
-                url: '/api/voice',
-                type: 'POST',
-                data: {
-                    name: $("#name").val(),
-                    data: reader.result,
-                },
-                success: function(response) {
-                    console.log("done")
-                },
-                error: function(response){
-                    console.log("error")
-                }
-            });
-        }
-    });
 
     // Begin Streaming video
     video.addEventListener('canplay', function (ev) {
@@ -295,31 +272,36 @@ function upload() {
     if (!errors) {
         console.log("uploading data")
 
-        // send image to server
-        $.ajax({
-            url: '/api/data',    //api url
-            type: 'POST',   //HTTP method
-            dataType: ' text',
-            async: false,
-            cache: false,
-            data: {
-                name: name.val(),
-                data: pictures
-            },
-            success: function (response) {
-                if (response) {
-                    location.assign("/")
-                }
-            },
-            error: function (exception) {
-                console.log(exception)
-                if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error
+        var reader = new window.FileReader();
+        reader.readAsDataURL(audioblob);
+        reader.onloadend = function(){
+            // send image to server
+            $.ajax({
+                url: '/api/data',    //api url
+                type: 'POST',   //HTTP method
+                dataType: ' text',
+                async: false,
+                cache: false,
+                data: {
+                    name: name.val(),
+                    data: pictures,
+                    audio: reader.result,
+                },
+                success: function (response) {
+                    if (response) {
+                        location.assign("/")
+                    }
+                },
+                error: function (exception) {
+                    console.log(exception)
+                    if (exception.responseJSON) {
+                        let msg = exception.responseJSON.error
 
-                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 }
 
