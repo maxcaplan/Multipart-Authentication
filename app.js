@@ -13,6 +13,11 @@ const port = process.env.npm_package_config_port || 8080
 
 let test = new PythonShell('./python/test.py')
 
+let img = fs.readFileSync('./users/Max Caplan/validation/user/Max Caplan19.png')
+test.send(JSON.stringify({ image: Buffer.from(img).toString('base64')}))
+
+// test.send()
+
 test.on('message', (message) => {
     console.log(message)
 })
