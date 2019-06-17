@@ -16,8 +16,8 @@ data = json.loads(lines)
 train_dir = str(data['trainingDir'])
 validation_dir = str(data["validationDir"])
 
-print('Total training images: ' + str(len(os.listdir(train_dir))))
-print('Total validation images: ' + str(len(os.listdir(validation_dir))))
+# print('Total training images: ' + str(len(os.listdir(train_dir))))
+# print('Total validation images: ' + str(len(os.listdir(validation_dir))))
 
 image_size = 160
 batch_size = 5

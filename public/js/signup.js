@@ -299,31 +299,25 @@ function upload() {
         $.ajax({
             url: '/api/data',    //api url
             type: 'POST',   //HTTP method
+            dataType: ' text',
+            async: false,
+            cache: false,
             data: {
                 name: name.val(),
                 data: pictures
             },
             success: function (response) {
                 if (response) {
-                    // on success send info to database
-                    $.ajax({
-                        url: '/api/info',
-                        type: 'POST',
-                        data: {
-                            name: name.val()
-                        },
-                        success: function (response) {
-                            console.log(response)
-                            location.assign("/")
-                        }
-                    })
+                    location.assign("/")
                 }
             },
             error: function (exception) {
                 console.log(exception)
-                let msg = exception.responseJSON.error
+                if (exception.responseJSON) {
+                    let msg = exception.responseJSON.error
 
-                document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
             }
         })
     }

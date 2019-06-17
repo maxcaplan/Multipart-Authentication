@@ -3,7 +3,9 @@ const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const { PythonShell } = require("python-shell");
 const fs = require('fs')
+const rimraf = require("rimraf");
 const ncp = require('ncp')
+const readline = require('readline')
 
 ncp.limit = 20
 
@@ -11,12 +13,10 @@ const app = express()
 const port = process.env.npm_package_config_port || 8080
 // app.get('/', (req, res) => res.send('Hello World!'))
 
-// let test = new PythonShell('./python/test.py')
+// let test = new PythonShell('./python/predict.py')
 
 // let img = fs.readFileSync('./users/Max Caplan/validation/user/Max Caplan19.png')
-// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64')}))
-
-// // test.send()
+// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64'), model: "./models/Max Caplan/1560449717.4126756.h5" }))
 
 // test.on('message', (message) => {
 //     console.log(message)
@@ -32,6 +32,37 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
         app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
         db = client.db('multipart-authentication')
+
+        // Command line interface for deleting users
+        var rl = readline.createInterface(process.stdin, process.stdout);
+
+        rl.on('line', (line) => {
+            if (line == "delUser") {
+                rl.question("Input users name: ", (name) => {
+                    if (name) {
+                        rl.question("Are you sure? (Y/n)", (answer) => {
+                            if (answer == "Y" || answer == "y") {
+                                if (fs.existsSync("./users/" + name)) {
+                                    console.log("deleting user: " + name)
+                                    rimraf.sync("./users/" + name)
+                                    console.log("Users images deleted")
+                                    rimraf.sync("./models/" + name)
+                                    console.log("Users models deleted")
+                                    db.collection('users').deleteOne({ "name": name })
+                                    console.log("User removed from database")
+                                } else {
+                                    console.log("User does not exist \naborted")
+                                }
+                            } else {
+                                console.log("aborted")
+                            }
+                        })
+                    } else {
+                        console.log("aborted")
+                    }
+                })
+            }
+        })
 
         // Test write to database
         app.post('/api/test', function (req, res) {
@@ -76,6 +107,13 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                     let trainDir = parentDir + "training/"
                     let validationDir = parentDir + "validation/"
 
+                    let data = {
+                        name: req.body.name,
+                        trainDir: trainDir,
+                        validationDir: validationDir,
+                        modelDir: "models/" + req.body.name + "/",
+                    }
+
                     if (!fs.existsSync(parentDir)) {
                         fs.mkdirSync(parentDir)
                         fs.mkdirSync(validationDir)
@@ -92,8 +130,8 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
 
                         var matches = string.match(regex);
                         var ext = matches[1];
-                        var data = matches[2];
-                        var buffer = Buffer.from(data, 'base64');
+                        var imgData = matches[2];
+                        var buffer = Buffer.from(imgData, 'base64');
                         if (i > 14) {
                             fs.writeFileSync(validationDir + "user/" + req.body.name + i + '.' + ext, buffer);
                         } else {
@@ -110,12 +148,19 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                                 if (err) {
                                     res.send(err)
                                 } else {
+                                    console.log("Beginning training")
+                                    // begin training face identification model
                                     let trainShell = new PythonShell('./python/train.py')
-                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 20, plot: false, model: null }))
+                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }))
                                     trainShell.on('message', (message) => {
                                         if (message == 'done') {
-                                            console.log("training complete")
-                                            res.send("done")
+                                            console.log("Training complete")
+                                            db.collection('users').insertOne(data, (err, result) => {
+                                                if (err) return console.log(err)
+
+                                                console.log('saved to database')
+                                                res.send('done')
+                                            })
                                         } else {
                                             console.log(message)
                                         }
@@ -130,7 +175,7 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
             })
         });
 
-        // Test write to database
+        // Write usre information to database
         app.post('/api/info', function (req, res) {
             let name = req.body.name
             let data = {
