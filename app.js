@@ -11,12 +11,10 @@ const app = express()
 const port = process.env.npm_package_config_port || 8080
 // app.get('/', (req, res) => res.send('Hello World!'))
 
-// let test = new PythonShell('./python/test.py')
+// let test = new PythonShell('./python/predict.py')
 
 // let img = fs.readFileSync('./users/Max Caplan/validation/user/Max Caplan19.png')
-// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64')}))
-
-// // test.send()
+// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64'), model: "./models/Max Caplan/1560449717.4126756.h5"}))
 
 // test.on('message', (message) => {
 //     console.log(message)
