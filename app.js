@@ -33,7 +33,6 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
 
         db = client.db('multipart-authentication')
 
-
         // Test write to database
         app.post('/api/test', function (req, res) {
             db.collection('test').insertOne(req.body, (err, result) => {
@@ -54,6 +53,15 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
             })
         })
 
+
+        app.post('/api/voice', function(req, res){
+            //let pyshell = new PythonShell('./voice-identifier/add_voice.py')
+            console.log(req.body);
+
+            fs.writeFileSync('audio.wav', Buffer.from(req.body.data.replace('data:audio/wav;base64,', ''), 'base64'));
+
+            res.send("done")
+        })
 
         app.post('/api/data', function (req, res) {
             if (req.body.data == false) {

@@ -11,12 +11,16 @@ var flash = null
 var captureBtn = null;
 var switchBtn = null;
 var uploadBtn = null;
+var audioBtn = null;
 var load = null
+var submitAudio = null;
 
 var pictures = []
 var constraints = null;
 var camIndex = 0;
 var pNum = 20;
+
+let audioblob = null;
 
 function startup() {
     // get page elements
@@ -26,7 +30,9 @@ function startup() {
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
+    audioBtn  = document.getElementById("audio");
     load = $('#modelLoad')
+    submitAudio = document.getElementById('submitAudio');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -36,6 +42,27 @@ function startup() {
         .catch(function (err) {
             console.log("An error occurred: " + err);
         });
+
+    submitAudio.addEventListener('click', function(ev) {
+        var reader = new window.FileReader();
+        reader.readAsDataURL(audioblob);
+        reader.onloadend = function(){
+            $.ajax({
+                url: '/api/voice',
+                type: 'POST',
+                data: {
+                    name: $("#name").val(),
+                    data: reader.result,
+                },
+                success: function(response) {
+                    console.log("done")
+                },
+                error: function(response){
+                    console.log("error")
+                }
+            });
+        }
+    });
 
     // Begin Streaming video
     video.addEventListener('canplay', function (ev) {
@@ -126,6 +153,40 @@ function startup() {
         upload();
         ev.preventDefault(), false;
     })
+
+    audioBtn.addEventListener('click', function(ev) {
+        // recording = !recording;
+        recordVoice();
+        ev.preventDefault();
+    })
+}
+
+function recordVoice() {
+    var audioFilePath = '/voice-identifier/data/database';
+    const audioChunks = [];
+    navigator.mediaDevices.getUserMedia({audio: true})
+        .then(stream => {
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start(0.5);
+            console.log("Recording...")
+
+            mediaRecorder.addEventListener("dataavailable", event => {
+                audioChunks.push(event.data);
+            });
+
+            mediaRecorder.addEventListener("stop", event => {
+                audioblob = new Blob(audioChunks, {'type': 'audio/wav'});
+                var fileReader = new FileReader();
+                fileReader.onload = function(ev) {
+                    console.log(ev)
+                };
+            });
+
+            setTimeout(() => {
+                mediaRecorder.stop();
+                console.log("Recording Finished")
+            }, 3000);
+        });
 }
 
 function switchcamera() {
