@@ -98,6 +98,13 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                     let trainDir = parentDir + "training/"
                     let validationDir = parentDir + "validation/"
 
+                    let data = {
+                        name: req.body.name,
+                        trainDir: trainDir,
+                        validationDir: validationDir,
+                        modelDir: "models/" + req.body.name + "/",
+                    }
+
                     if (!fs.existsSync(parentDir)) {
                         fs.mkdirSync(parentDir)
                         fs.mkdirSync(validationDir)
@@ -114,8 +121,8 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
 
                         var matches = string.match(regex);
                         var ext = matches[1];
-                        var data = matches[2];
-                        var buffer = Buffer.from(data, 'base64');
+                        var imgData = matches[2];
+                        var buffer = Buffer.from(imgData, 'base64');
                         if (i > 14) {
                             fs.writeFileSync(validationDir + "user/" + req.body.name + i + '.' + ext, buffer);
                         } else {
@@ -132,12 +139,19 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
                                 if (err) {
                                     res.send(err)
                                 } else {
+                                    console.log("Beginning training")
+                                    // begin training face identification model
                                     let trainShell = new PythonShell('./python/train.py')
-                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 20, plot: false, model: null }))
+                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }))
                                     trainShell.on('message', (message) => {
                                         if (message == 'done') {
-                                            console.log("training complete")
-                                            res.send("done")
+                                            console.log("Training complete")
+                                            db.collection('users').insertOne(data, (err, result) => {
+                                                if (err) return console.log(err)
+
+                                                console.log('saved to database')
+                                                res.send('done')
+                                            })
                                         } else {
                                             console.log(message)
                                         }
