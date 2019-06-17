@@ -3,7 +3,9 @@ const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const { PythonShell } = require("python-shell");
 const fs = require('fs')
+const rimraf = require("rimraf");
 const ncp = require('ncp')
+const readline = require('readline')
 
 ncp.limit = 20
 
@@ -14,7 +16,7 @@ const port = process.env.npm_package_config_port || 8080
 // let test = new PythonShell('./python/predict.py')
 
 // let img = fs.readFileSync('./users/Max Caplan/validation/user/Max Caplan19.png')
-// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64'), model: "./models/Max Caplan/1560449717.4126756.h5"}))
+// test.send(JSON.stringify({ image: Buffer.from(img).toString('base64'), model: "./models/Max Caplan/1560449717.4126756.h5" }))
 
 // test.on('message', (message) => {
 //     console.log(message)
@@ -31,6 +33,36 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
 
         db = client.db('multipart-authentication')
 
+        // Command line interface for deleting users
+        var rl = readline.createInterface(process.stdin, process.stdout);
+
+        rl.on('line', (line) => {
+            if (line == "delUser") {
+                rl.question("Input users name: ", (name) => {
+                    if (name) {
+                        rl.question("Are you sure? (Y/n)", (answer) => {
+                            if (answer == "Y" || answer == "y") {
+                                if (fs.existsSync("./users/" + name)) {
+                                    console.log("deleting user: " + name)
+                                    rimraf.sync("./users/" + name)
+                                    console.log("Users images deleted")
+                                    rimraf.sync("./models/" + name)
+                                    console.log("Users models deleted")
+                                    db.collection('users').deleteOne({ "name": name })
+                                    console.log("User removed from database")
+                                } else {
+                                    console.log("User does not exist \naborted")
+                                }
+                            } else {
+                                console.log("aborted")
+                            }
+                        })
+                    } else {
+                        console.log("aborted")
+                    }
+                })
+            }
+        })
 
         // Test write to database
         app.post('/api/test', function (req, res) {
@@ -120,7 +152,7 @@ MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authenticatio
             })
         });
 
-        // Test write to database
+        // Write usre information to database
         app.post('/api/info', function (req, res) {
             let name = req.body.name
             let data = {

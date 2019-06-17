@@ -260,9 +260,11 @@ function upload() {
             },
             error: function (exception) {
                 console.log(exception)
-                let msg = exception.responseJSON.error
+                if (exception.responseJSON.error) {
+                    let msg = exception.responseJSON.error
 
-                document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
             }
         })
     }

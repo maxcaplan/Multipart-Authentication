@@ -32,8 +32,6 @@ imgObj = Image.open(io.BytesIO(decode))
 image = cv2.cvtColor(np.array(imgObj), cv2.COLOR_BGR2RGB)
 
 resize = cv2.resize(image, (160, 160))
-cv2.imshow('image',image)
-image = np.expand_dims(resize, axis=0)
 
 # make prediction
 prediction = model.predict(image, steps=1)
