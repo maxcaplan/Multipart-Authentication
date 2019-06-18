@@ -32,7 +32,7 @@ function startup() {
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
-    audioBtn  = document.getElementById("audio");
+    audioBtn = document.getElementById("audio");
     load = $('#modelLoad');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -134,7 +134,7 @@ function startup() {
         ev.preventDefault(), false;
     });
 
-    audioBtn.addEventListener('click', function(ev) {
+    audioBtn.addEventListener('click', function (ev) {
         recordVoice();
         ev.preventDefault();
     })
@@ -142,9 +142,9 @@ function startup() {
 
 function recordVoice() {
     recording = !recording;
-    if (recording && voice.length < aNum){
+    if (recording && voice.length < aNum) {
         const audioChunks = [];
-        navigator.mediaDevices.getUserMedia({audio: true})
+        navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
                 const mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start(0.25);
@@ -156,10 +156,10 @@ function recordVoice() {
                 });
 
                 mediaRecorder.addEventListener("stop", event => {
-                    audioblob = new Blob(audioChunks, {'type': 'audio/wav'});
+                    audioblob = new Blob(audioChunks, { 'type': 'audio/wav' });
                     var fileReader = new FileReader();
                     fileReader.readAsDataURL(audioblob);
-                    fileReader.onload = function(ev) {
+                    fileReader.onload = function (ev) {
                         voice.push(fileReader.result);
                         console.log(ev)
                     };
@@ -168,14 +168,14 @@ function recordVoice() {
                 setTimeout(() => {
                     mediaRecorder.stop();
                     console.log("Recording Finished");
-                    $("#audio").html("Recording Finished (" + (voice.length+1) + "/3)");
+                    $("#audio").html("Recording Finished (" + (voice.length + 1) + "/3)");
                     recording = !recording;
                 }, 3000);
             });
     }
     else if (voice.length > 2) {
         console.log("Have already collected the correct number of recordings");
-        $("#audio").html("Total recordings hava already been collected");
+        $("#audio").html("Total recordings have already been collected");
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");
@@ -187,7 +187,7 @@ function switchcamera() {
     var listDevices = [];
     navigator.mediaDevices.enumerateDevices().then(function (devices) {
         var arrayLength = devices.length;
-        for (var i=0; i<arrayLength; i++) {
+        for (var i = 0; i < arrayLength; i++) {
             var tempDevice = devices[i];
             if (tempDevice.kind === "videoinput") {
                 listDevices.push(tempDevice);
