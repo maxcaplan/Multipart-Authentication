@@ -7,7 +7,7 @@ import numpy as np
 from scipy.io.wavfile import read
 
 from feature_extraction import extract_features
-from retrain_gmm import retrain_gmm
+from train_gmm import train_gmm
 
 # HYPERPARAMETERS
 FORMAT = pyaudio.paInt16
@@ -108,7 +108,7 @@ def recognize_voice():
             add_data = 'n'
 
         if add_data == 'y':
-            retrain_gmm(identify)
+            train_gmm(identify)
     else:
         print("[ACCESS DENIED] Voice authentication does not match")
 
