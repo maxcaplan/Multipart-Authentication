@@ -2,6 +2,7 @@ var width = 320;    // We will scale the photo width to this
 var height = 0;     // This will be computed based on the input stream
 
 var streaming = false;
+var recording = false;
 var capturing = false;
 
 // page elements
@@ -15,9 +16,11 @@ var audioBtn = null;
 var load = null
 
 var pictures = []
+var voice = [];
 var constraints = null;
 var camIndex = 0;
 var pNum = 20;
+var aNum = 3;
 
 let audioblob = null;
 
@@ -132,45 +135,59 @@ function startup() {
     })
 
     audioBtn.addEventListener('click', function(ev) {
-        // recording = !recording;
         recordVoice();
         ev.preventDefault();
     })
 }
 
 function recordVoice() {
-    var audioFilePath = '/voice-identifier/data/database';
-    const audioChunks = [];
-    navigator.mediaDevices.getUserMedia({audio: true})
-        .then(stream => {
-            const mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start(0.5);
-            console.log("Recording...")
+    recording = !recording;
+    if (recording && voice.length < aNum){
+        const audioChunks = [];
+        navigator.mediaDevices.getUserMedia({audio: true})
+            .then(stream => {
+                const mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start(0.25);
+                $("#audio").html("Recording... (Please say your name)");
+                console.log("Recording...");
 
-            mediaRecorder.addEventListener("dataavailable", event => {
-                audioChunks.push(event.data);
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
+                });
+
+                mediaRecorder.addEventListener("stop", event => {
+                    audioblob = new Blob(audioChunks, {'type': 'audio/wav'});
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(audioblob);
+                    fileReader.onload = function(ev) {
+                        voice.push(fileReader.result);
+                        //console.log(ev)
+                    };
+                });
+
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    console.log("Recording Finished");
+                    $("#audio").html("Recording Finished (" + (voice.length+1) + "/3)");
+                    recording = !recording;
+                }, 3000);
             });
-
-            mediaRecorder.addEventListener("stop", event => {
-                audioblob = new Blob(audioChunks, {'type': 'audio/wav'});
-                var fileReader = new FileReader();
-                fileReader.onload = function(ev) {
-                    console.log(ev)
-                };
-            });
-
-            setTimeout(() => {
-                mediaRecorder.stop();
-                console.log("Recording Finished")
-            }, 3000);
-        });
+    }
+    else if (voice.length > 2) {
+        console.log("Have already collected the correct number of recordings");
+        $("#audio").html("Total recordings hava already been collected")
+    }
+    else {
+        console.log("Recording already in progress, cannot record multiple files at once");
+        recording = !recording
+    }
 }
 
 function switchcamera() {
     var listDevices = [];
     navigator.mediaDevices.enumerateDevices().then(function (devices) {
         var arrayLength = devices.length;
-        for (var i = 0; i < arrayLength; i++) {
+        for (var i=0; i<arrayLength; i++) {
             var tempDevice = devices[i];
             if (tempDevice.kind === "videoinput") {
                 listDevices.push(tempDevice);
@@ -189,6 +206,9 @@ function switchcamera() {
                 constraints = { audio: false, video: { deviceId: { extract: listDevices[0].deviceId } } };
                 camIndex = 0;
             }
+        }
+        else {
+            console.log("Only one video device detected, could not switch cameras")
         }
         navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
             window.stream = stream;
@@ -270,38 +290,33 @@ function upload() {
     }
 
     if (!errors) {
-        console.log("uploading data")
-
-        var reader = new window.FileReader();
-        reader.readAsDataURL(audioblob);
-        reader.onloadend = function(){
-            // send image to server
-            $.ajax({
-                url: '/api/data',    //api url
-                type: 'POST',   //HTTP method
-                dataType: ' text',
-                async: false,
-                cache: false,
-                data: {
-                    name: name.val(),
-                    data: pictures,
-                    audio: reader.result,
-                },
-                success: function (response) {
-                    if (response) {
-                        location.assign("/")
-                    }
-                },
-                error: function (exception) {
-                    console.log(exception)
-                    if (exception.responseJSON) {
-                        let msg = exception.responseJSON.error
-
-                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
-                    }
+        console.log("uploading data");
+        // send image to server
+        $.ajax({
+            url: '/api/data',    //api url
+            type: 'POST',   //HTTP method
+            dataType: ' text',
+            async: false,
+            cache: false,
+            data: {
+                name: name.val(),
+                data: pictures,
+                audio: voice,
+            },
+            success: function (response) {
+                if (response) {
+                    location.assign("/")
                 }
-            })
-        }
+            },
+            error: function (exception) {
+                console.log(exception)
+                if (exception.responseJSON) {
+                    let msg = exception.responseJSON.error
+
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
+            }
+        })
     }
 }
 
