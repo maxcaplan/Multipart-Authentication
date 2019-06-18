@@ -33,8 +33,21 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
     if (err) {
         fallback(err)
     } else {
+        app.use(bodyParser.json({ extended: true, limit: '50mb' }));
+        
+        app.post('/subscribe', (req, res) => {
+            const subscription = req.body;
+            res.status(201).json({});
+            const payload = JSON.stringify({ title: 'test', body: 'Test Body Text', url:'/' });
+
+            console.log("Sending Notification");
+
+            webPush.sendNotification(subscription, payload).catch(error => {
+                console.error(error.stack);
+            });
+        });
+
         app.use(express.static('public'))
-        app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
         db = client.db('multipart-authentication')
 
@@ -90,7 +103,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         })
 
 
-        app.post('/api/voice', function(req, res){
+        app.post('/api/voice', function (req, res) {
             //let pyshell = new PythonShell('./voice-identifier/add_voice.py')
             console.log(req.body);
             fs.writeFileSync('audio.wav', Buffer.from(req.body.data.replace('data:audio/wav;base64,', ''), 'base64'));
