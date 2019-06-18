@@ -33,7 +33,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
     if (err) {
         fallback(err)
     } else {
-        app.use(bodyParser.json({ extended: true, limit: '50mb' }));
+        app.use(bodyParser.json());
         
         app.post('/subscribe', (req, res) => {
             const subscription = req.body;
@@ -46,6 +46,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                 console.error(error.stack);
             });
         });
+
+        app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
 
         app.use(express.static('public'))
 
@@ -111,6 +113,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         })
 
         app.post('/api/data', function (req, res) {
+            console.log(req.body)
+
             if (req.body.data == false) {
                 return res.status(400).send('No files were uploaded.');
             }
