@@ -161,7 +161,7 @@ function recordVoice() {
                     fileReader.readAsDataURL(audioblob);
                     fileReader.onload = function(ev) {
                         voice.push(fileReader.result);
-                        //console.log(ev)
+                        console.log(ev)
                     };
                 });
 
