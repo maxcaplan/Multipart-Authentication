@@ -1,6 +1,9 @@
+require('dotenv').config()
+
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
+const webPush = require('web-push')
 const { PythonShell } = require("python-shell");
 const fs = require('fs')
 const rimraf = require("rimraf");
@@ -22,9 +25,11 @@ const port = process.env.npm_package_config_port || 8080
 //     console.log(message)
 // })
 
+webPush.setVapidDetails('mailto:maxacaplan@gmail.com', process.env.PUBLIC_KEY, process.env.PRIVATE_KEY)
+
 var db
 
-MongoClient.connect('mongodb+srv://admin:henryschien2019@multipart-authentication-m7xcq.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true }, (err, client) => {
+MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client) => {
     if (err) {
         fallback(err)
     } else {
