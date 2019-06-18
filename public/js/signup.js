@@ -8,14 +8,14 @@ var capturing = false;
 // page elements
 var collapse = null;
 var video = null;
-var flash = null
+var flash = null;
 var captureBtn = null;
 var switchBtn = null;
 var uploadBtn = null;
 var audioBtn = null;
-var load = null
+var load = null;
 
-var pictures = []
+var pictures = [];
 var voice = [];
 var constraints = null;
 var camIndex = 0;
@@ -26,14 +26,14 @@ let audioblob = null;
 
 function startup() {
     // get page elements
-    collapse = $("#faceID")
+    collapse = $("#faceID");
     video = document.getElementById('videoElement');
-    flash = $("#flash")
+    flash = $("#flash");
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
     audioBtn  = document.getElementById("audio");
-    load = $('#modelLoad')
+    load = $('#modelLoad');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -59,15 +59,15 @@ function startup() {
 
             // Load Models and start checking for faces periodicly
             loadModel().then(() => {
-                $("#loadWrapper").addClass("collapse-anim")
-                $("#loadLabel").hide()
+                $("#loadWrapper").addClass("collapse-anim");
+                $("#loadLabel").hide();
                 collapse.collapse('show')
             }).then(() => {
                 setInterval(() => {
                     if (capturing && pictures.length < pNum) {
 
                         // Capture frame of video
-                        let frame = document.createElement("canvas")
+                        let frame = document.createElement("canvas");
                         var context = frame.getContext('2d');
                         if (width && height) {
                             frame.width = width;
@@ -79,33 +79,33 @@ function startup() {
                         detectFaces(frame).then((result) => {
                             // check if face is detected
                             if (result.data.length > 0) {
-                                $("#status").addClass("text-success")
-                                $("#status").removeClass("text-danger")
-                                $("#status").html("Face Detected")
+                                $("#status").addClass("text-success");
+                                $("#status").removeClass("text-danger");
+                                $("#status").html("Face Detected");
                                 crop(result.image.toDataURL('image/jpg'), result.data[0])
                                     .then((image) => {
-                                        pictures.push(image)
+                                        pictures.push(image);
 
-                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
 
                                         flash.removeClass('show');
-                                        flash.addClass('show')
+                                        flash.addClass('show');
                                         flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
                                             function (e) {
                                                 flash.removeClass('show');
                                             });
                                     })
                             } else {
-                                $("#status").removeClass("text-success")
-                                $("#status").addClass("text-danger")
-                                $("#status").html("Face Not Detected")
+                                $("#status").removeClass("text-success");
+                                $("#status").addClass("text-danger");
+                                $("#status").html("Face Not Detected");
                             }
                         })
                     }
 
                     if (pictures.length >= pNum) {
-                        capturing = false
-                        captureBtn.html("Done!")
+                        capturing = false;
+                        captureBtn.html("Done!");
                         captureBtn.attr("disabled", true);
                     }
                 }, 1000)
@@ -114,11 +114,11 @@ function startup() {
     }, false);
 
     captureBtn.click(function (ev) {
-        capturing = !capturing
+        capturing = !capturing;
         if (capturing) {
-            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
         } else {
-            captureBtn.html("Start Scanning Face")
+            captureBtn.html("Start Scanning Face");
         }
 
         ev.preventDefault();
@@ -132,7 +132,7 @@ function startup() {
     uploadBtn.addEventListener('click', function (ev) {
         upload();
         ev.preventDefault(), false;
-    })
+    });
 
     audioBtn.addEventListener('click', function(ev) {
         recordVoice();
@@ -175,7 +175,7 @@ function recordVoice() {
     }
     else if (voice.length > 2) {
         console.log("Have already collected the correct number of recordings");
-        $("#audio").html("Total recordings hava already been collected")
+        $("#audio").html("Total recordings hava already been collected");
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");
@@ -222,70 +222,69 @@ function switchcamera() {
 
 function crop(img, box) {
     return new Promise((resolved, rejected) => {
-        let cc = document.createElement('canvas')
-        let ctx = cc.getContext('2d')
-        let resize = faceapi.resizeResults(box, { width: width, height: height })
+        let cc = document.createElement('canvas');
+        let ctx = cc.getContext('2d');
+        let resize = faceapi.resizeResults(box, { width: width, height: height });
         let image = new Image;
 
-        let bW = resize.box.width
-        let bH = resize.box.height
+        let bW = resize.box.width;
+        let bH = resize.box.height;
 
         if (bW > bH) {
             cc.width = bW;
             cc.height = bW;
         } else {
-            cc.height = bH
-            cc.height = bH
+            cc.height = bH;
+            cc.height = bH;
         }
 
         image.onload = () => {
-            ctx.drawImage(image, -resize.box.x, -resize.box.y, width, height)
-            resolved(cc.toDataURL('image/jpg'))
+            ctx.drawImage(image, -resize.box.x, -resize.box.y, width, height);
+            resolved(cc.toDataURL('image/jpg'));
         }
-
         image.src = img
     })
 }
 
 // Load models from folder
 async function loadModel() {
-    console.log("loading models")
-    await faceapi.loadSsdMobilenetv1Model("/models")
-    console.log("mobile net loaded")
-    load.width("50%")
-    await faceapi.loadTinyFaceDetectorModel("/models")
-    console.log("tiny face loaded")
-    load.width("100%")
+    console.log("loading models");
+    await faceapi.loadSsdMobilenetv1Model("/models");
+    console.log("mobile net loaded");
+    load.width("50%");
+    await faceapi.loadTinyFaceDetectorModel("/models");
+    console.log("tiny face loaded");
+    load.width("100%");
     return
 }
 
 // Detect faces in video stream
 async function detectFaces(img) {
-    let detect = await faceapi.tinyFaceDetector(img)
+    let detect = await faceapi.tinyFaceDetector(img);
     return { data: detect, image: img }
 }
 
 function upload() {
-    let name = $("#name")
-    let errors = false
+    let name = $("#name");
+    let errors = false;
 
     if (name.val().length < 3) {
-        name.tooltip('enable')
-        name.tooltip('show')
-        errors = true
+        name.tooltip('enable');
+        name.tooltip('show');
+        errors = true;
 
         name.on('hidden.bs.tooltip', function () {
-            name.tooltip('disable')
+            name.tooltip('disable');
         })
     }
 
     if (pictures.length < pNum) {
-        captureBtn.tooltip('enable')
-        captureBtn.tooltip('show')
-        errors = true
+        captureBtn.tooltip('enable');
+        captureBtn.tooltip('show');
+        errors = true;
 
         captureBtn.on('hidden.bs.tooltip', function () {
-            captureBtn.tooltip('disable')
+            captureBtn.tooltip('disable');
         })
     }
 
@@ -305,13 +304,13 @@ function upload() {
             },
             success: function (response) {
                 if (response) {
-                    location.assign("/")
+                    location.assign("/");
                 }
             },
             error: function (exception) {
-                console.log(exception)
+                console.log(exception);
                 if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error
+                    let msg = exception.responseJSON.error;
 
                     document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                 }
