@@ -20,6 +20,7 @@ An experiment with multi-part authentication using machine learning
 ```bash
 npm install
 ```
+
 <br/>
 
 2. **Generate your vapid keys:**
@@ -40,11 +41,12 @@ Private Key:
 ```
 
 Copy these keys into their respective variables in the `.env_example` file.
+
 <br/>
 
 3. **Connect to your MongoDB Cluster**
 
-This project uses MongoDB as the database for storing user profile information. You will need to setup your own cluster with [MongoDb Atlas](https://www.mongodb.com/cloud/atlas)
+This project uses MongoDB as the database for storing user profile information. You will need to setup your own cluster with [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 
 <br/>
 
@@ -52,7 +54,7 @@ Once you've created a cluster, navigate to the connect dialog and select *Connec
 ```node
 'mongodb+srv://<Your User>:<password>@<Your Cluster>.mongodb.net/test?retryWrites=true&w=majority'
 ```
-copy this url with the correct user password replacing <password> into the ```DB_URL``` variable in `.env_example`
+copy this url with the correct user password replacing ```<password>``` into the ```DB_URL``` variable in `.env_example`
 
 <br/>
 
