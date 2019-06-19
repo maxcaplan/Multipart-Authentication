@@ -3,38 +3,39 @@ console.log('Loaded service worker!');
 // Listen for notification
 self.addEventListener('push', ev => {
     const data = ev.data.json();
+    ev.waitUntil(
+        // Get list of all clients of this worker
+        self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(function (clientList) {
 
-    // Get list of all clients of this worker
-    self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then(function (clientList) {
-
-        // check if there's at least one focused client
-        var isFocused = clientList.some(function (client) {
-            return client.focused;
-        });
-
-        if (isFocused) {
-            // send notification data to focused client
-            var focused = clientList.filter(obj => {
-                return obj.focused === true
-            })
-
-            send_message_to_client(focused[0], {
-                title: data.title,
-                body: data.body
-            })
-
-        } else {
-            // display browser notification
-            self.registration.showNotification(data.title, {
-                body: data.body,
-                icon: '../assets/icons/mstile-310x310.png',
-                data: {
-                    url: data.url
-                }
+            // check if there's at least one focused client
+            var isFocused = clientList.some(function (client) {
+                return client.focused;
             });
-        }
 
-    })
+            if (isFocused) {
+                // send notification data to focused client
+                var focused = clientList.filter(obj => {
+                    return obj.focused === true
+                })
+
+                return send_message_to_client(focused[0], {
+                    title: data.title,
+                    body: data.body
+                })
+
+            } else {
+                // display browser notification
+                return self.registration.showNotification(data.title, {
+                    body: data.body,
+                    icon: '../assets/icons/mstile-310x310.png',
+                    data: {
+                        url: data.url
+                    }
+                });
+            }
+
+        })
+    )
 });
 
 // Add event listener for when the notification is clicked
