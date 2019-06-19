@@ -25,9 +25,9 @@ const port = process.env.npm_package_config_port || 8080
 //     console.log(message)
 // })
 
-webPush.setVapidDetails('mailto:maxacaplan@gmail.com', process.env.PUBLIC_KEY, process.env.PRIVATE_KEY)
+webPush.setVapidDetails('mailto:maxacaplan@gmail.com', process.env.PUBLIC_KEY, process.env.PRIVATE_KEY);
 
-var db
+var db;
 
 MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client) => {
     if (err) {
@@ -47,11 +47,11 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             });
         });
 
-        app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
+        app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 
-        app.use(express.static('public'))
+        app.use(express.static('public'));
 
-        db = client.db('multipart-authentication')
+        db = client.db('multipart-authentication');
 
         // Command line interface for deleting users
         var rl = readline.createInterface(process.stdin, process.stdout);
@@ -63,12 +63,12 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         rl.question("Are you sure? (Y/n)", (answer) => {
                             if (answer == "Y" || answer == "y") {
                                 if (fs.existsSync("./users/" + name)) {
-                                    console.log("deleting user: " + name)
-                                    rimraf.sync("./users/" + name)
-                                    console.log("Users images deleted")
-                                    rimraf.sync("./models/" + name)
-                                    console.log("Users models deleted")
-                                    db.collection('users').deleteOne({ "name": name })
+                                    console.log("deleting user: " + name);
+                                    rimraf.sync("./users/" + name);
+                                    console.log("Users images deleted");
+                                    rimraf.sync("./models/" + name);
+                                    console.log("Users models deleted");
+                                    db.collection('users').deleteOne({ "name": name });
                                     console.log("User removed from database")
                                 } else {
                                     console.log("User does not exist \naborted")
@@ -82,50 +82,42 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     }
                 })
             }
-        })
+        });
 
         // Test write to database
         app.post('/api/test', function (req, res) {
             db.collection('test').insertOne(req.body, (err, result) => {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
-                console.log('saved to database')
+                console.log('saved to database');
                 res.redirect('/')
             })
-        })
+        });
 
         // Test fetch from database 
         app.get('/api/test/get', function (req, res) {
-            console.log("fetching from database")
+            console.log("fetching from database");
             db.collection('test').find().toArray(function (err, results) {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
                 res.send(results)
             })
-        })
-
-
-        app.post('/api/voice', function (req, res) {
-            //let pyshell = new PythonShell('./voice-identifier/add_voice.py')
-            console.log(req.body);
-            fs.writeFileSync('audio.wav', Buffer.from(req.body.data.replace('data:audio/wav;base64,', ''), 'base64'));
-            res.send("done")
-        })
+        });
 
         app.post('/api/data', function (req, res) {
-            console.log(req.body)
+            console.log(req.body);
 
             if (req.body.data == false) {
                 return res.status(400).send('No files were uploaded.');
             }
 
             db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
                 if (results == false) {
-                    let parentDir = "./users/" + req.body.name + "/"
-                    let trainDir = parentDir + "training/"
-                    let validationDir = parentDir + "validation/"
+                    let parentDir = "./users/" + req.body.name + "/";
+                    let trainDir = parentDir + "training/";
+                    let validationDir = parentDir + "validation/";
 
                     let data = {
                         name: req.body.name,
@@ -135,22 +127,23 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     }
 
                     if (!fs.existsSync(parentDir)) {
-                        fs.mkdirSync(parentDir)
-                        fs.mkdirSync(validationDir)
-                        fs.mkdirSync(trainDir)
-                        fs.mkdirSync(validationDir + "user/")
-                        fs.mkdirSync(trainDir + "user/")
-                        fs.mkdirSync(validationDir + "not/")
-                        fs.mkdirSync(trainDir + "not/")
-                        fs.mkdirSync(parentDir + "audio/")
+                        fs.mkdirSync(parentDir);
+                        fs.mkdirSync(validationDir);
+                        fs.mkdirSync(trainDir);
+                        fs.mkdirSync(validationDir + "user/");
+                        fs.mkdirSync(trainDir + "user/");
+                        fs.mkdirSync(validationDir + "not/");
+                        fs.mkdirSync(trainDir + "not/");
+                        fs.mkdirSync(parentDir + "audio/");
+                        fs.mkdirSync(parentDir + "gmm-model/");
                     }
 
                     for (let i=0; i<req.body.audio.length; i++) {
-                        fs.writeFileSync(parentDir + 'audio/' + (i+1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                        fs.writeFileSync(parentDir + 'audio/' + (i+1).toString() + '.wav', Buffer.from(req.body.audio[i].replace('data:audio/wav;base64,', ''), 'base64'));
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {
-                        var string = req.body.data[i]
+                        var string = req.body.data[i];
                         var regex = /^data:.+\/(.+);base64,(.*)$/;
 
                         var matches = string.match(regex);
@@ -173,49 +166,68 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                 if (err) {
                                     res.send(err)
                                 } else {
-                                    console.log("Beginning training")
+                                    console.log("Beginning training");
                                     // begin training face identification model
-                                    let trainShell = new PythonShell('./python/train.py')
-                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }))
+                                    let trainShell = new PythonShell('./python/train.py');
+                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }));
                                     trainShell.on('message', (message) => {
-                                        if (message == 'done') {
-                                            console.log("Training complete")
+                                        if (message === 'done') {
+                                            console.log("Training complete");
                                             db.collection('users').insertOne(data, (err, result) => {
-                                                if (err) return console.log(err)
+                                                if (err) return console.log(err);
 
-                                                console.log('saved to database')
-                                                res.send('done')
+                                                console.log('saved to database');
+                                                res.send('done');
                                             })
                                         } else {
                                             console.log(message)
                                         }
-                                    })
+                                    });
+                                    // todo training Guassian Mixture model for voice authentication
+                                    var options = {
+                                        mode: 'text',
+                                        pythonOptions: ['-u'],
+                                        scriptPath: './voice-identifier/',
+                                        args: [JSON.stringify({"name": req.body.name})]
+                                    };
+                                    PythonShell.run('train_gmm.py', options, function(err, results) {
+                                        if (err) throw err;
+                                        console.log(results)
+                                    });
                                 }
                             })
                         }
                     })
                 } else {
-                    res.status(409).send("account already exists")
+                    res.status(409).send("account already exists");
                 }
             })
         });
 
+        // todo pass 'req.body.name' to train_gmm.py for voice authentication training
+        app.post('/api/data', function (req, res) {
+            let pyshell = new PythonShell('./voice-identifier/train_gmm.py');
+            var name = req.body.name;
+            pyshell.run(name);
+            console.log("Results %j", res)
+        });
+
         // Write usre information to database
         app.post('/api/info', function (req, res) {
-            let name = req.body.name
+            let name = req.body.name;
             let data = {
                 name: name,
                 trainDir: "training/users/" + name + "/",
                 validationDir: "validation/users/" + name + "/",
                 modelDir: "models/" + name + "/",
-            }
+            };
             db.collection('users').insertOne(data, (err, result) => {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
-                console.log('saved to database')
+                console.log('saved to database');
                 res.redirect('/')
             })
-        })
+        });
 
         app.get('*', function (req, res) {
             // res.send('page not found');
@@ -227,10 +239,10 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
 })
 
 function fallback(error) {
-    console.log(error)
-    console.log("error connecting to server using fallback")
+    console.log(error);
+    console.log("error connecting to server using fallback");
 
-    app.use(express.static('fallback'))
+    app.use(express.static('fallback'));
 
     app.listen(port, () => console.log(`Listening on port ${port}`))
 }
