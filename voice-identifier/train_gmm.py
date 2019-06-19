@@ -2,14 +2,16 @@ import pyaudio
 import os
 import pickle
 import numpy as np
+import filetype
+import subprocess
 from scipy.io.wavfile import read
 from sklearn.mixture import GaussianMixture as GMM
 
 from feature_extraction import extract_features
-from functionality import relative_path
 
 # HYPERPARAMETERS
-DATABASE_DIR = '/Multipart-Authentication/users/'
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) + '/'
+DATABASE_DIR = ROOT_DIR + 'users/'
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -20,12 +22,23 @@ RECORD_SECONDS = 3
 def train_gmm(name):
     # setting paths to database directory and .gmm files in models
     source = DATABASE_DIR + name + '/audio/'
-    destination = DATABASE_DIR + name + '/gmm_model/'
+    destination = DATABASE_DIR + name + '/gmm-model/'
 
     count = 1
 
     for path in os.listdir(source):
         path = os.path.join(source, path)
+        fname = os.path.basename(path)
+
+        # check that the audio files are saved under the correct extension
+        # if file extension is not '.wav' then convert to '.wav' format
+        kind = filetype.guess(path)
+        if kind.extension != "wav":
+            command = "ffmpeg -i " + path + " -ab 160k -ac 2 -ar 44100 -vn " + fname
+            print(command)
+            subprocess.call(command, shell=True)
+            os.remove(path)
+            os.rename(ROOT_DIR + '/voice-identifier/' + fname, path)
 
         features = np.array([])
 
