@@ -1,11 +1,14 @@
-var width = 320;    // We will scale the photo width to this
-var height = 0;     // This will be computed based on the input stream
+const publicVapidKey = 'BNs4y954y27kjvbj5tg4CuJYO-cGC4tnyjPST2bwuUKLfuHuDOdyJqGh1HHhowVw9DL0rvWaEr0j80jcF4KQlmc'
 
+var width = 320;
+var height = 0;
+
+// State Variables
 var streaming = false;
 var recording = false;
 var capturing = false;
 
-// page elements
+// Page Elements
 var collapse = null;
 var video = null;
 var flash = null
@@ -14,7 +17,10 @@ var switchBtn = null;
 var uploadBtn = null;
 var audioBtn = null;
 var load = null
+var notificationBtn = null
+var noThanksBtn = null
 
+// Data Variables
 var pictures = []
 var voice = [];
 var constraints = null;
@@ -24,8 +30,14 @@ var aNum = 3;
 
 let audioblob = null;
 
+
+/*~~~~~~~~~~~~~~~*/
+/*    StartUp    */
+/*~~~~~~~~~~~~~~~*/
+
+
 function startup() {
-    // get page elements
+    // Get page elements
     collapse = $("#faceID")
     video = document.getElementById('videoElement');
     flash = $("#flash")
@@ -34,7 +46,10 @@ function startup() {
     uploadBtn = document.getElementById('upload');
     audioBtn = document.getElementById("audio");
     load = $('#modelLoad')
+    notificationBtn = document.getElementById('notificationBtn')
+    noThanksBtn = document.getElementById('noThanksBtn')
 
+    // Request to use users webcam
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
             video.srcObject = stream;
@@ -57,7 +72,7 @@ function startup() {
             video.setAttribute('height', height);
             streaming = true;
 
-            // Load Models and start checking for faces periodicly
+            // Load Models and start checking for faces periodically
             loadModel().then(() => {
                 $("#loadWrapper").addClass("collapse-anim")
                 $("#loadLabel").hide()
@@ -88,11 +103,11 @@ function startup() {
 
                                         captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
 
-                                        flash.removeClass('show');
-                                        flash.addClass('show')
+                                        flash.removeClass('display');
+                                        flash.addClass('display')
                                         flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
                                             function (e) {
-                                                flash.removeClass('show');
+                                                flash.removeClass('display');
                                             });
                                     })
                             } else {
@@ -108,11 +123,13 @@ function startup() {
                         captureBtn.html("Done!")
                         captureBtn.attr("disabled", true);
                     }
-                }, 1000)
+                }, 500)
             })
         }
     }, false);
 
+
+    // Attach event listeners to functional buttons
     captureBtn.click(function (ev) {
         capturing = !capturing
         if (capturing) {
@@ -130,15 +147,131 @@ function startup() {
     }, false);
 
     uploadBtn.addEventListener('click', function (ev) {
-        upload();
-        ev.preventDefault(), false;
+        let name = $("#name")
+        let errors = false
+
+        // Check if user already exists
+        $.ajax({
+            url: '/api/checkUser',    //api url
+            type: 'POST',   //HTTP method
+            data: {
+                name: name.val()
+            },
+            success: function (response) {
+                // if no user exists check that data is correct
+                if (response) {
+                    // if the username is too short throw error
+                    if (name.val().length < 3) {
+                        name.tooltip('enable')
+                        name.tooltip('show')
+                        errors = true
+
+                        name.on('hidden.bs.tooltip', function () {
+                            name.tooltip('disable')
+                        })
+                    }
+
+                    // if there is less than the min number of pictures throw errot
+                    if (pictures.length < pNum) {
+                        captureBtn.tooltip('enable')
+                        captureBtn.tooltip('show')
+                        errors = true
+
+                        captureBtn.on('hidden.bs.tooltip', function () {
+                            captureBtn.tooltip('disable')
+                        })
+                    }
+
+                    // if there are no errors display modal
+                    if (!errors) {
+                        $('#uploadModal').modal({ backdrop: 'static', keyboard: false })
+                    }
+
+                    ev.preventDefault(), false;
+                }
+            },
+            error: function (exception) {
+                console.log(exception)
+                if (exception.responseText) {
+                    let msg = exception.responseText
+
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
+            }
+        })
     })
 
     audioBtn.addEventListener('click', function (ev) {
         recordVoice();
         ev.preventDefault();
     })
+
+    notificationBtn.addEventListener('click', function (ev) {
+        if ('serviceWorker' in navigator) {
+            register()
+                .then(result => {
+                    subscribe(result)
+                        .then(subscription => {
+                            $.ajax({
+                                url: '/api/data',    //api url
+                                type: 'POST',   //HTTP method
+                                data: {
+                                    name: $("#name").val(),
+                                    data: pictures,
+                                    audio: voice,
+                                    subscription: JSON.stringify(subscription)
+                                },
+                                success: function (response) {
+                                    if (response) {
+                                        location.assign("/")
+                                    }
+                                },
+                                error: function (exception) {
+                                    console.log(exception)
+                                    if (exception.responseJSON) {
+                                        let msg = exception.responseJSON.error
+
+                                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                                    }
+                                }
+                            })
+                        })
+                })
+        }
+    })
+
+    noThanksBtn.addEventListener('click', function (ev) {
+        $.ajax({
+            url: '/api/data',    //api url
+            type: 'POST',   //HTTP method
+            data: {
+                name: $("#name").val(),
+                data: pictures,
+                audio: voice,
+                subscription: false
+            },
+            success: function (response) {
+                if (response) {
+                    location.assign("/")
+                }
+            },
+            error: function (exception) {
+                console.log(exception)
+                if (exception.responseJSON) {
+                    let msg = exception.responseJSON.error
+
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
+            }
+        })
+    })
 }
+
+
+/*~~~~~~~~~~~~~~~*/
+/*   Functions   */
+/*~~~~~~~~~~~~~~~*/
+
 
 function recordVoice() {
     recording = !recording;
@@ -265,56 +398,38 @@ async function detectFaces(img) {
     return { data: detect, image: img }
 }
 
-function upload() {
-    let name = $("#name")
-    let errors = false
-
-    if (name.val().length < 3) {
-        name.tooltip('enable')
-        name.tooltip('show')
-        errors = true
-
-        name.on('hidden.bs.tooltip', function () {
-            name.tooltip('disable')
-        })
-    }
-
-    if (pictures.length < pNum) {
-        captureBtn.tooltip('enable')
-        captureBtn.tooltip('show')
-        errors = true
-
-        captureBtn.on('hidden.bs.tooltip', function () {
-            captureBtn.tooltip('disable')
-        })
-    }
-
-    if (!errors) {
-        console.log("uploading data");
-        // send image to server
-        $.ajax({
-            url: '/api/data',    //api url
-            type: 'POST',   //HTTP method
-            data: {
-                name: name.val(),
-                data: pictures,
-                audio: voice,
-            },
-            success: function (response) {
-                if (response) {
-                    location.assign("/")
-                }
-            },
-            error: function (exception) {
-                console.log(exception)
-                if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error
-
-                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
-                }
-            }
-        })
-    }
+// Register a service worker to check for incoming notifications
+async function register() {
+    console.log('Registering service worker...');
+    return await navigator.serviceWorker.
+        register('http://localhost:8080/js/worker.js', { scope: '/js/' });
 }
 
+// Create a subscription to send to the server
+async function subscribe(worker) {
+    console.log("Creating subscription...")
+    return await worker.pushManager.
+        subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+        });
+}
+
+// Helper function to parse vapid key
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+// Run startup on window load
 window.addEventListener('load', startup, false);
