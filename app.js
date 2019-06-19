@@ -159,9 +159,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         fs.mkdirSync(parentDir + "audio/")
                     }
 
-                    for (let i = 0; i < req.body.audio.length; i++) {
-                        console.log(req.body.audio.length);
-                        fs.writeFileSync(parentDir + 'audio/' + (i + 1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                    for (let i=0; i<req.body.audio.length; i++) {
+                        fs.writeFileSync(parentDir + 'audio/' + (i+1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {

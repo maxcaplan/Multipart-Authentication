@@ -6,9 +6,13 @@ var streaming = false;
 
 var video = null;
 var canvas = null;
+var switchBtn = null;
+
+var camIndex = 0;
 
 function startup() {
     video = document.getElementById('loginVideo');
+    switchBtn = document.getElementById('switch');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -34,6 +38,47 @@ function startup() {
         }
     }, false);
 
+    switchBtn.addEventListener('click', function (ev) {
+        switchcamera();
+        ev.preventDefault();
+    }, false);
+
+    function switchcamera() {
+        var listDevices = [];
+        navigator.mediaDevices.enumerateDevices().then(function (devices) {
+            var arrayLength = devices.length;
+            for (var i=0; i<arrayLength; i++) {
+                var tempDevice = devices[i];
+                if (tempDevice.kind === "videoinput") {
+                    listDevices.push(tempDevice);
+                }
+            }
+            var numCameras = listDevices.length;
+            if (numCameras > 1) {
+                if ({ video: { deviceId: { exact: listDevices[1].deviceId } } } && camIndex === 0) {
+                    console.log("Camera index 1 is active");
+                    constraints = { audio: false, video: { deviceId: { exact: listDevices[1].deviceId } } };
+                    camIndex = 1;
+
+                }
+                else if ({ video: { deviceId: { exact: listDevices[0].deviceId } } } && camIndex === 1) {
+                    console.log("Camera index 0 is active");
+                    constraints = { audio: false, video: { deviceId: { extract: listDevices[0].deviceId } } };
+                    camIndex = 0;
+                }
+            }
+            else {
+                console.log("Only one video device detected, could not switch cameras")
+            }
+            navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                window.stream = stream;
+                video.srcObject = stream;
+                video.play();
+            }).catch(function (error) {
+                console.log('navigator.getUserMedia error: ', error);
+            })
+        });
+    }
     // captureBtn.addEventListener('click', function (ev) {
     //     takepicture();
     //     ev.preventDefault();

@@ -11,7 +11,7 @@ var capturing = false;
 // Page Elements
 var collapse = null;
 var video = null;
-var flash = null
+var flash = null;
 var captureBtn = null;
 var switchBtn = null;
 var uploadBtn = null;
@@ -40,7 +40,7 @@ function startup() {
     // Get page elements
     collapse = $("#faceID")
     video = document.getElementById('videoElement');
-    flash = $("#flash")
+    flash = $("#flash");
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
@@ -74,15 +74,15 @@ function startup() {
 
             // Load Models and start checking for faces periodically
             loadModel().then(() => {
-                $("#loadWrapper").addClass("collapse-anim")
-                $("#loadLabel").hide()
+                $("#loadWrapper").addClass("collapse-anim");
+                $("#loadLabel").hide();
                 collapse.collapse('show')
             }).then(() => {
                 setInterval(() => {
                     if (capturing && pictures.length < pNum) {
 
                         // Capture frame of video
-                        let frame = document.createElement("canvas")
+                        let frame = document.createElement("canvas");
                         var context = frame.getContext('2d');
                         if (width && height) {
                             frame.width = width;
@@ -94,14 +94,14 @@ function startup() {
                         detectFaces(frame).then((result) => {
                             // check if face is detected
                             if (result.data.length > 0) {
-                                $("#status").addClass("text-success")
-                                $("#status").removeClass("text-danger")
-                                $("#status").html("Face Detected")
+                                $("#status").addClass("text-success");
+                                $("#status").removeClass("text-danger");
+                                $("#status").html("Face Detected");
                                 crop(result.image.toDataURL('image/jpg'), result.data[0])
                                     .then((image) => {
-                                        pictures.push(image)
+                                        pictures.push(image);
 
-                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
 
                                         flash.removeClass('display');
                                         flash.addClass('display')
@@ -111,16 +111,16 @@ function startup() {
                                             });
                                     })
                             } else {
-                                $("#status").removeClass("text-success")
-                                $("#status").addClass("text-danger")
-                                $("#status").html("Face Not Detected")
+                                $("#status").removeClass("text-success");
+                                $("#status").addClass("text-danger");
+                                $("#status").html("Face Not Detected");
                             }
                         })
                     }
 
                     if (pictures.length >= pNum) {
-                        capturing = false
-                        captureBtn.html("Done!")
+                        capturing = false;
+                        captureBtn.html("Done!");
                         captureBtn.attr("disabled", true);
                     }
                 }, 500)
@@ -131,11 +131,11 @@ function startup() {
 
     // Attach event listeners to functional buttons
     captureBtn.click(function (ev) {
-        capturing = !capturing
+        capturing = !capturing;
         if (capturing) {
-            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>")
+            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
         } else {
-            captureBtn.html("Start Scanning Face")
+            captureBtn.html("Start Scanning Face");
         }
 
         ev.preventDefault();
@@ -294,7 +294,7 @@ function recordVoice() {
                     fileReader.readAsDataURL(audioblob);
                     fileReader.onload = function (ev) {
                         voice.push(fileReader.result);
-                        //console.log(ev)
+                        console.log(ev)
                     };
                 });
 
@@ -308,7 +308,7 @@ function recordVoice() {
     }
     else if (voice.length > 2) {
         console.log("Have already collected the correct number of recordings");
-        $("#audio").html("Total recordings hava already been collected")
+        $("#audio").html("Total recordings have already been collected");
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");
@@ -355,46 +355,45 @@ function switchcamera() {
 
 function crop(img, box) {
     return new Promise((resolved, rejected) => {
-        let cc = document.createElement('canvas')
-        let ctx = cc.getContext('2d')
-        let resize = faceapi.resizeResults(box, { width: width, height: height })
+        let cc = document.createElement('canvas');
+        let ctx = cc.getContext('2d');
+        let resize = faceapi.resizeResults(box, { width: width, height: height });
         let image = new Image;
 
-        let bW = resize.box.width
-        let bH = resize.box.height
+        let bW = resize.box.width;
+        let bH = resize.box.height;
 
         if (bW > bH) {
             cc.width = bW;
             cc.height = bW;
         } else {
-            cc.height = bH
-            cc.height = bH
+            cc.height = bH;
+            cc.height = bH;
         }
 
         image.onload = () => {
-            ctx.drawImage(image, -resize.box.x, -resize.box.y, width, height)
-            resolved(cc.toDataURL('image/jpg'))
+            ctx.drawImage(image, -resize.box.x, -resize.box.y, width, height);
+            resolved(cc.toDataURL('image/jpg'));
         }
-
         image.src = img
     })
 }
 
 // Load models from folder
 async function loadModel() {
-    console.log("loading models")
-    await faceapi.loadSsdMobilenetv1Model("/models")
-    console.log("mobile net loaded")
-    load.width("50%")
-    await faceapi.loadTinyFaceDetectorModel("/models")
-    console.log("tiny face loaded")
-    load.width("100%")
+    console.log("loading models");
+    await faceapi.loadSsdMobilenetv1Model("/models");
+    console.log("mobile net loaded");
+    load.width("50%");
+    await faceapi.loadTinyFaceDetectorModel("/models");
+    console.log("tiny face loaded");
+    load.width("100%");
     return
 }
 
 // Detect faces in video stream
 async function detectFaces(img) {
-    let detect = await faceapi.tinyFaceDetector(img)
+    let detect = await faceapi.tinyFaceDetector(img);
     return { data: detect, image: img }
 }
 
