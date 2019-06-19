@@ -180,10 +180,12 @@
 
                         <div class="row">
                             <div class="col text-center mb-3">
-                                <button id="notificationBtn" type="button" class="btn btn-lg btn-info rounded-pill">Notify Me</button>
+                                <button id="notificationBtn" type="button"
+                                    class="btn btn-lg btn-info rounded-pill">Notify Me</button>
                             </div>
                             <div class="col text-center">
-                                <button id="noThanksBtn" type="button" class="btn btn-lg btn-primary rounded-pill">Don't Notify Me</button>
+                                <button id="noThanksBtn" type="button" class="btn btn-lg btn-primary rounded-pill">Don't
+                                    Notify Me</button>
                             </div>
                         </div>
                     </div>
@@ -192,6 +194,21 @@
         </div>
     </div>
 
+    <!-- Notification -->
+    <div id="notification" class="toast border-0 m-2" role="alert" aria-live="assertive" aria-atomic="true"
+        data-autohide="false"
+        style="position: fixed; bottom: 0; right: 0; border-radius: 12px; min-width: 40vmin; max-width: 100%;">
+        <div class="toast-header p-3">
+            <!-- <img src="./assets/icons/apple-touch-icon.png" class="rounded mr-2" width="30" alt="logo"> -->
+            <h5 id="notifTitle" class="mr-auto my-0">Title</h5>
+            <button type="button" class="ml-3 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <i class="fas fa-times fa-sm"></i>
+            </button>
+        </div>
+        <div id="notifBody" class="toast-body font-weight-bold">
+            Body
+        </div>
+    </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -204,6 +221,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
     <script src="./js/face-api.min.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', function (event) {
+                $("#notifTitle").text(event.data.title)
+                $("#notifBody").text(event.data.body)
+                $("#notification").toast('show')
+            });
+        }
+    </script>
 
     <script src="js/signup.js"></script>
 </body>

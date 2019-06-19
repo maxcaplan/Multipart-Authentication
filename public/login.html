@@ -87,12 +87,29 @@
                         <div class="row">
                             <div class="col text-center">
                                 <i class="text-muted small">By <a href="https://github.com/jellycream"
-                                                                  target="blank">Max Caplan</a> & <a href="https://github.com/willmacd">Will MacDonald</a></i>
+                                        target="blank">Max Caplan</a> & <a href="https://github.com/willmacd">Will
+                                        MacDonald</a></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="toast border-0 m-2" role="alert" aria-live="assertive" aria-atomic="true"
+        data-autohide="false"
+        style="position: fixed; bottom: 0; right: 0; border-radius: 12px; min-width: 40vmin; max-width: 100%;">
+        <div class="toast-header p-3">
+            <!-- <img src="./assets/icons/apple-touch-icon.png" class="rounded mr-2" width="30" alt="logo"> -->
+            <h5 id="notifTitle" class="mr-auto my-0">Title</h5>
+            <button type="button" class="ml-3 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <i class="fas fa-times fa-sm"></i>
+            </button>
+        </div>
+        <div id="notifBody" class="toast-body font-weight-bold">
+            Body
         </div>
     </div>
 
@@ -105,6 +122,16 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', function (event) {
+                $("#notifTitle").text(event.data.title)
+                $("#notifBody").text(event.data.body)
+                $("#notification").toast('show')
+            });
+        }
+    </script>
 </body>
 
 </html>

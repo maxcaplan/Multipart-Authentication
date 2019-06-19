@@ -146,6 +146,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         trainDir: trainDir,
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
+                        subscription: subscription
                     }
 
                     if (!fs.existsSync(parentDir)) {
