@@ -149,7 +149,8 @@
                         <div class="row">
                             <div class="col text-center">
                                 <i class="text-muted small">By <a href="https://github.com/jellycream"
-                                                                  target="blank">Max Caplan</a> & <a href="https://github.com/willmacd">Will MacDonald</a></i>
+                                        target="blank">Max Caplan</a> & <a href="https://github.com/willmacd">Will
+                                        MacDonald</a></i>
                             </div>
                         </div>
 
@@ -157,7 +158,40 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModal"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="row mt-5">
+                            <div class="col text-center">
+                                <h1 class="modal-title" id="uploadModal">Before You Submit</h1>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-center my-5 px-2">
+                            <div class="col-md-6 col-sm font-weight-bold">
+                                You can turn on notifications with the button below to get notified when your account is
+                                ready
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col text-center mb-3">
+                                <button id="notificationBtn" type="button" class="btn btn-lg btn-info rounded-pill">Notify Me</button>
+                            </div>
+                            <div class="col text-center">
+                                <button id="noThanksBtn" type="button" class="btn btn-lg btn-primary rounded-pill">Don't Notify Me</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

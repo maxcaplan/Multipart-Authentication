@@ -63,7 +63,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 12px;
 }
 
-.show {
+.display {
     animation: flash 0.5s ease 0s 1 normal forwards;
 }
 
@@ -76,11 +76,11 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-#flash .show {
+#flash .display {
     display: none;
 }
 
-#flash .hide {
+#flash .display {
     display: none;
 }
 
@@ -121,4 +121,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .ui-container {
     max-width: 600px;
+}
+
+.modal-content {
+    border-radius: 12px;
 }
