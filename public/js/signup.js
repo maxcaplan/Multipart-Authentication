@@ -44,7 +44,7 @@ function startup() {
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
-    audioBtn = $('#audio') // document.getElementById("audio");
+    audioBtn = $('#audio')
     load = $('#modelLoad')
     notificationBtn = document.getElementById('notificationBtn')
     noThanksBtn = document.getElementById('noThanksBtn')
