@@ -25,9 +25,9 @@ const port = process.env.npm_package_config_port || 8080
 //     console.log(message)
 // })
 
-webPush.setVapidDetails('mailto:maxacaplan@gmail.com', process.env.PUBLIC_KEY, process.env.PRIVATE_KEY)
+webPush.setVapidDetails('mailto:maxacaplan@gmail.com', process.env.PUBLIC_KEY, process.env.PRIVATE_KEY);
 
-var db
+var db;
 
 MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client) => {
     if (err) {
@@ -43,12 +43,12 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         rl.question("Are you sure? (Y/n)", (answer) => {
                             if (answer == "Y" || answer == "y") {
                                 if (fs.existsSync("./users/" + name)) {
-                                    console.log("deleting user: " + name)
-                                    rimraf.sync("./users/" + name)
-                                    console.log("Users images deleted")
-                                    rimraf.sync("./models/" + name)
-                                    console.log("Users models deleted")
-                                    db.collection('users').deleteOne({ "name": name })
+                                    console.log("deleting user: " + name);
+                                    rimraf.sync("./users/" + name);
+                                    console.log("Users images deleted");
+                                    rimraf.sync("./models/" + name);
+                                    console.log("Users models deleted");
+                                    db.collection('users').deleteOne({ "name": name });
                                     console.log("User removed from database")
                                 } else {
                                     console.log("User does not exist \naborted")
@@ -62,7 +62,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     }
                 })
             }
-        })
+        });
 
         app.use(bodyParser.json());
 
@@ -90,30 +90,22 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         // Test write to database
         app.post('/api/test', function (req, res) {
             db.collection('test').insertOne(req.body, (err, result) => {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
-                console.log('saved to database')
+                console.log('saved to database');
                 res.redirect('/')
             })
-        })
+        });
 
         // Test fetch from database 
         app.get('/api/test/get', function (req, res) {
-            console.log("fetching from database")
+            console.log("fetching from database");
             db.collection('test').find().toArray(function (err, results) {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
                 res.send(results)
             })
-        })
-
-
-        app.post('/api/voice', function (req, res) {
-            //let pyshell = new PythonShell('./voice-identifier/add_voice.py')
-            console.log(req.body);
-            fs.writeFileSync('audio.wav', Buffer.from(req.body.data.replace('data:audio/wav;base64,', ''), 'base64'));
-            res.send("done")
-        })
+        });
 
         app.post('/api/data', function (req, res) {
             var subscription = false
@@ -141,30 +133,31 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             }
 
             db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
 
                 if (results == false) {
-                    let parentDir = "./users/" + req.body.name + "/"
-                    let trainDir = parentDir + "training/"
-                    let validationDir = parentDir + "validation/"
+                    let parentDir = "./users/" + req.body.name + "/";
+                    let trainDir = parentDir + "training/";
+                    let validationDir = parentDir + "validation/";
 
                     let data = {
                         name: req.body.name,
                         trainDir: trainDir,
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
-                        subscription: subscription
+                        subscription: subscription,
                     }
 
                     if (!fs.existsSync(parentDir)) {
-                        fs.mkdirSync(parentDir)
-                        fs.mkdirSync(validationDir)
-                        fs.mkdirSync(trainDir)
-                        fs.mkdirSync(validationDir + "user/")
-                        fs.mkdirSync(trainDir + "user/")
-                        fs.mkdirSync(validationDir + "not/")
-                        fs.mkdirSync(trainDir + "not/")
-                        fs.mkdirSync(parentDir + "audio/")
+                        fs.mkdirSync(parentDir);
+                        fs.mkdirSync(validationDir);
+                        fs.mkdirSync(trainDir);
+                        fs.mkdirSync(validationDir + "user/");
+                        fs.mkdirSync(trainDir + "user/");
+                        fs.mkdirSync(validationDir + "not/");
+                        fs.mkdirSync(trainDir + "not/");
+                        fs.mkdirSync(parentDir + "audio/");
+                        fs.mkdirSync(parentDir + "gmm-model/");
                     }
 
                     for (let i = 0; i < req.body.audio.length; i++) {
@@ -172,7 +165,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {
-                        var string = req.body.data[i]
+                        var string = req.body.data[i];
                         var regex = /^data:.+\/(.+);base64,(.*)$/;
 
                         var matches = string.match(regex);
@@ -186,6 +179,12 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         }
                     }
 
+                    let gmmShell = new PythonShell('./voice-identifier/train_gmm.py');
+                    gmmShell.send(JSON.stringify({name: req.body.name}));
+                    gmmShell.on('message', (message) => {
+                        console.log(message);
+                    });
+
                     // add none user images to training and validation
                     ncp("./randomImages", trainDir + "not/", (err) => {
                         if (err) {
@@ -195,16 +194,16 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                 if (err) {
                                     res.send(err)
                                 } else {
-                                    console.log("Beginning training")
-                                    res.redirect("/")
+                                    console.log("Beginning training");
+                                    res.redirect("/");
                                     // begin training face identification model
-                                    let trainShell = new PythonShell('./python/train.py')
-                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }))
+                                    let trainShell = new PythonShell('./python/train.py');
+                                    trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }));
                                     trainShell.on('message', (message) => {
-                                        if (message == 'done') {
-                                            console.log("Training complete")
+                                        if (message === 'done') {
+                                            console.log("Training complete");
                                             db.collection('users').insertOne(data, (err, result) => {
-                                                if (err) return console.log(err)
+                                                if (err) return console.log(err);
 
                                                 console.log('saved to database')
 
@@ -218,13 +217,13 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                         } else {
                                             console.log(message)
                                         }
-                                    })
+                                    });
                                 }
                             })
                         }
-                    })
+                    });
                 } else {
-                    res.status(409).send("account already exists")
+                    res.status(409).send("account already exists");
                 }
             })
         });
@@ -238,7 +237,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     res.status(200).send("done")
                 }
             })
-        })
+        });
 
         app.get('*', function (req, res) {
             // res.send('page not found');
@@ -250,10 +249,10 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
 })
 
 function fallback(error) {
-    console.log(error)
-    console.log("error connecting to server using fallback")
+    console.log(error);
+    console.log("error connecting to server using fallback");
 
-    app.use(express.static('fallback'))
+    app.use(express.static('fallback'));
 
     app.listen(port, () => console.log(`Listening on port ${port}`))
 }

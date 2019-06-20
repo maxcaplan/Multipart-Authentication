@@ -340,7 +340,7 @@ function startup() {
                     }
                 })
         }
-    })
+    });
 
     noThanksBtn.addEventListener('click', function (ev) {
         $.ajax({
@@ -358,9 +358,9 @@ function startup() {
                 }
             },
             error: function (exception) {
-                console.log(exception)
+                console.log(exception);
                 if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error
+                    let msg = exception.responseJSON.error;
 
                     document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                 }
@@ -415,6 +415,10 @@ function recordVoice() {
     else if (voice.length > 2) {
         console.log("Have already collected the correct number of recordings");
         $("#audio").html("Total recordings have already been collected");
+        if (pictures.length < pNum) {
+            captureBtn.attr("disabled", false);
+        }
+        uploadBtn.disabled = false;
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");

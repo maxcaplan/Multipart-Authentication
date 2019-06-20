@@ -4,6 +4,8 @@ import pickle
 import numpy as np
 import filetype
 import subprocess
+import sys
+import json
 from scipy.io.wavfile import read
 from sklearn.mixture import GaussianMixture as GMM
 
@@ -11,12 +13,17 @@ from feature_extraction import extract_features
 
 # HYPERPARAMETERS
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) + '/'
-DATABASE_DIR = ROOT_DIR + 'users/'
+DATABASE_DIR = './users/'
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 3
+
+# fetch data passed through PythonShell from app.js
+lines = sys.stdin.readline()
+data = json.loads(lines)
+name = str(data['name'])
 
 
 def train_gmm(name):
@@ -37,7 +44,7 @@ def train_gmm(name):
             command = "ffmpeg -i " + path + " -ab 160k -ac 2 -ar 44100 -vn " + fname
             subprocess.call(command, shell=True)
             os.remove(path)
-            os.rename(ROOT_DIR + '/voice-identifier/' + fname, path)
+            os.rename('./' + fname, path)
 
         features = np.array([])
 
@@ -59,9 +66,13 @@ def train_gmm(name):
 
             # save the trained Gaussian Model
             pickle.dump(gmm, open(destination + name + '.gmm', 'wb'))
-            print(name + ' Successfully retained voice to database')
+            print("Model for " + name + "'s voice has successfully been trained")
 
             features = np.asarray(())
             count = 0
-            return gmm
         count = count + 1
+
+
+if __name__ == '__main__':
+    train_gmm(name)
+
