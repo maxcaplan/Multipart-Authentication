@@ -46,7 +46,7 @@
 </head>
 
 <body>
-    <div class="w-100 h-100 d-flex align-items-center">
+    <div id="globalWrapper" class="w-100 d-flex align-items-center">
         <div class="row w-100 d-flex justify-content-center p-0 mx-0 my-3">
             <div class="col ui-container col-md-6">
                 <div class="card card-main animated fadeInLeft signup border-0 shadow">
@@ -103,12 +103,14 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row mb-2">
                                 <div class="col w-100 text-center">
-                                    <button id="capture" class="btn btn-info" data-toggle="tooltip" data-placement="top"
-                                        title="Not enough images">Start Scanning Face</button>
-                                    <button id="switch" class="btn btn-info"><i
-                                            class="fas fa-exchange-alt fa-2x"></i></button>
+                                    <div class="btn-group">
+                                        <button id="capture" class="btn btn-info" data-toggle="tooltip"
+                                            data-placement="top" title="Not enough images">Start Scanning Face</button>
+                                        <button id="switch" class="btn btn-secondary"><i
+                                                class="fas fa-exchange-alt fa-lg"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -135,13 +137,13 @@
 
                         <div class="row mb-3">
                             <div class="col text-center">
-                                <a class="btn btn-secondary" href="/">
-                                    <i class="fas fa-arrow-left"></i> back
+                                <a class="btn btn-block btn-secondary" href="/">
+                                    back
                                 </a>
                             </div>
                             <div class="col text-center">
-                                <button id="upload" class="btn btn-primary">
-                                    submit <i class="fas fa-paper-plane"></i>
+                                <button id="upload" class="btn btn-block btn-primary">
+                                    submit
                                 </button>
                             </div>
                         </div>
@@ -163,16 +165,16 @@
         <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModal"
             aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content">
+                <div class="modal-content text-light shadow border-0">
                     <div class="modal-body">
                         <div class="row mt-5">
                             <div class="col text-center">
-                                <h1 class="modal-title" id="uploadModal">Before You Submit</h1>
+                                <h1 class="modal-title mb-0" id="uploadModal">Before You Submit</h1>
                             </div>
                         </div>
 
                         <div class="row d-flex justify-content-center my-5 px-2">
-                            <div class="col-md-6 col-sm font-weight-bold">
+                            <div class="col-md-6 col-sm font-weight-bold text-center">
                                 You can turn on notifications with the button below to get notified when your account is
                                 ready
                             </div>
@@ -181,11 +183,16 @@
                         <div class="row">
                             <div class="col text-center mb-3">
                                 <button id="notificationBtn" type="button"
-                                    class="btn btn-lg btn-info rounded-pill">Notify Me</button>
+                                    class="btn btn-lg btn-light shadow rounded-pill">
+                                    <span class="d-none d-md-inline">Notify Me</span>
+                                    <span class="d-md-none">Notify</span>
+                                </button>
                             </div>
                             <div class="col text-center">
-                                <button id="noThanksBtn" type="button" class="btn btn-lg btn-primary rounded-pill">Don't
-                                    Notify Me</button>
+                                <button id="noThanksBtn" type="button" class="btn btn-lg btn-light shadow rounded-pill">
+                                    <span class="d-none d-md-inline">Don't Notify Me</span>
+                                    <span class="d-md-none">Don't</span>
+                                </button>
                             </div>
                         </div>
                     </div>
