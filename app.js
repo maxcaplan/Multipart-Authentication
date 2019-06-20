@@ -33,26 +33,6 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
     if (err) {
         fallback(err)
     } else {
-        app.use(bodyParser.json());
-        
-        app.post('/subscribe', (req, res) => {
-            const subscription = req.body;
-            res.status(201).json({});
-            const payload = JSON.stringify({ title: 'test', body: 'Test Body Text', url:'/' });
-
-            console.log("Sending Notification");
-
-            webPush.sendNotification(subscription, payload).catch(error => {
-                console.error(error.stack);
-            });
-        });
-
-        app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
-
-        app.use(express.static('public'));
-
-        db = client.db('multipart-authentication');
-
         // Command line interface for deleting users
         var rl = readline.createInterface(process.stdin, process.stdout);
 
@@ -84,6 +64,29 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             }
         });
 
+        app.use(bodyParser.json());
+
+        app.post('/subscribe', (req, res) => {
+            const subscription = req.body;
+            res.status(201).json({});
+            const payload = JSON.stringify({ title: 'test', body: 'Test Body Text', url: '/' });
+
+            console.log("Sending Notification");
+
+            webPush.sendNotification(subscription, payload).catch(error => {
+                console.error(error.stack);
+            });
+        });
+
+        app.post('/register', (req, res) => {
+            res.sendStatus(201);
+        })
+
+        app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }))
+        app.use(express.static('public'))
+
+        db = client.db('multipart-authentication')
+
         // Test write to database
         app.post('/api/test', function (req, res) {
             db.collection('test').insertOne(req.body, (err, result) => {
@@ -105,7 +108,18 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         });
 
         app.post('/api/data', function (req, res) {
-            console.log(req.body);
+            var subscription = false
+            var payload = false
+
+            if (req.body.subscription != false) {
+                subscription = JSON.parse(req.body.subscription)
+                payload = JSON.stringify({
+                    title: 'Your Account is Ready!',
+                    body: 'The Account ' + req.body.name + ' is ready to be used',
+                    url: 'localhost:8080/login.html'
+                });
+            }
+
 
             if (req.body.data == false) {
                 return res.status(400).send('No files were uploaded.');
@@ -157,6 +171,11 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         }
                     }
 
+                    PythonShell.run("./voice-identifier/train_gmm.py", {args: [req.body.name]}, function(err, results) {
+                        if (err) throw (err);
+                        console.log("GMM finished training");
+                    });
+
                     // add none user images to training and validation
                     ncp("./randomImages", trainDir + "not/", (err) => {
                         if (err) {
@@ -166,7 +185,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                 if (err) {
                                     res.send(err)
                                 } else {
-                                    console.log("Beginning training");
+                                    console.log("Beginning training")
+                                    res.redirect("/")
                                     // begin training face identification model
                                     let trainShell = new PythonShell('./python/train.py');
                                     trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }));
@@ -176,23 +196,18 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                             db.collection('users').insertOne(data, (err, result) => {
                                                 if (err) return console.log(err);
 
-                                                console.log('saved to database');
-                                                res.send('done');
+                                                console.log('saved to database')
+
+                                                if (subscription != false) {
+                                                    console.log("Sending Notification");
+                                                    webPush.sendNotification(subscription, payload).catch(error => {
+                                                        console.error(error.stack);
+                                                    });
+                                                }
                                             })
                                         } else {
                                             console.log(message)
                                         }
-                                    });
-                                    // todo training Guassian Mixture model for voice authentication
-                                    var options = {
-                                        mode: 'text',
-                                        pythonOptions: ['-u'],
-                                        scriptPath: './voice-identifier/',
-                                        args: [JSON.stringify({"name": req.body.name})]
-                                    };
-                                    PythonShell.run('train_gmm.py', options, function(err, results) {
-                                        if (err) throw err;
-                                        console.log(results)
                                     });
                                 }
                             })
@@ -204,28 +219,14 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             })
         });
 
-        // todo pass 'req.body.name' to train_gmm.py for voice authentication training
-        app.post('/api/data', function (req, res) {
-            let pyshell = new PythonShell('./voice-identifier/train_gmm.py');
-            var name = req.body.name;
-            pyshell.run(name);
-            console.log("Results %j", res)
-        });
-
-        // Write usre information to database
-        app.post('/api/info', function (req, res) {
-            let name = req.body.name;
-            let data = {
-                name: name,
-                trainDir: "training/users/" + name + "/",
-                validationDir: "validation/users/" + name + "/",
-                modelDir: "models/" + name + "/",
-            };
-            db.collection('users').insertOne(data, (err, result) => {
-                if (err) return console.log(err);
-
-                console.log('saved to database');
-                res.redirect('/')
+        app.post('/api/checkUser', (req, res) => {
+            db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
+                if (err) return console.log(err)
+                if (results.length > 0) {
+                    res.status(409).send("account already exists")
+                } else {
+                    res.status(200).send("done")
+                }
             })
         });
 
