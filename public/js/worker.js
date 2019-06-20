@@ -25,9 +25,10 @@ self.addEventListener('push', ev => {
 
             } else {
                 // display browser notification
-                return self.registration.showNotification(data.title, {
+                self.registration.showNotification(data.title, {
                     body: data.body,
                     icon: '../assets/icons/mstile-310x310.png',
+                    vibrate: [500, 100, 500],
                     data: {
                         url: data.url
                     }
