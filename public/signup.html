@@ -54,7 +54,7 @@
 
                         <div class="row">
                             <div class="col">
-                                <h1 class="display-3 text-center title">Sign Up</h1>
+                                <h1 id="signupTitle" class="display-3 text-center">Sign Up</h1>
                             </div>
                         </div>
 
@@ -71,7 +71,7 @@
                                 <label for="name">Username:</label>
                                 <div class="input-group">
                                     <input id="name" type="text" class="form-control border-0" placeholder="John Doe"
-                                        data-toggle="tooltip" data-placement="top" title="Username too short">
+                                        data-toggle="tooltip" data-placement="top" title="Username">
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                                 <div class="col w-100 text-center">
                                     <div class="btn-group">
                                         <button id="capture" class="btn btn-info" data-toggle="tooltip"
-                                            data-placement="top" title="Not enough images">Start Scanning Face</button>
+                                            data-placement="top" title="Scan Face">Start Scanning Face</button>
                                         <button id="switch" class="btn btn-secondary"><i
                                                 class="fas fa-exchange-alt fa-lg"></i></button>
                                     </div>
@@ -127,7 +127,8 @@
                             <div class="col">
                                 <div id="audio-container" class="card w-100 border-0">
                                     <button id="audio" class="text-light" data-toggle="tooltip" data-placement="top"
-                                            title="Not enough recordings"><i class="fas fa-microphone-alt fa-2x"></i>
+                                        title="Record voice" disabled>
+                                        <i class="fas fa-microphone-alt fa-2x"></i>
                                     </button>
                                 </div>
                             </div>
@@ -142,7 +143,7 @@
                                 </a>
                             </div>
                             <div class="col text-center">
-                                <button id="upload" class="btn btn-block btn-primary">
+                                <button id="upload" class="btn btn-block btn-primary" disabled>
                                     submit
                                 </button>
                             </div>

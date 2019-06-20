@@ -44,10 +44,15 @@ function startup() {
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
-    audioBtn = $('#audio') // document.getElementById("audio");
+    audioBtn = $("#audio")
     load = $('#modelLoad')
     notificationBtn = document.getElementById('notificationBtn')
     noThanksBtn = document.getElementById('noThanksBtn')
+
+    uploadBtn.disabled = true;
+    captureBtn.disabled = true;
+    audioBtn.disabled = true;
+
 
     // Request to use users webcam
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -61,6 +66,9 @@ function startup() {
 
     // Begin Streaming video
     video.addEventListener('canplay', function (ev) {
+        captureBtn.disabled = false;
+        audioBtn.attr("disabled", false);
+
         if (!streaming) {
             height = video.videoHeight / (video.videoWidth / width);
 
@@ -77,10 +85,10 @@ function startup() {
                 $("#loadWrapper").addClass("collapse-anim");
                 $("#loadLabel").hide();
                 collapse.collapse('show')
+                uploadBtn.disabled = false;
             }).then(() => {
                 setInterval(() => {
                     if (capturing && pictures.length < pNum) {
-
                         // Capture frame of video
                         let frame = document.createElement("canvas");
                         var context = frame.getContext('2d');
@@ -92,34 +100,48 @@ function startup() {
 
                         // pass frmae into face detector
                         detectFaces(frame).then((result) => {
-                            // check if face is detected
-                            if (result.data.length > 0) {
-                                $("#status").addClass("text-success");
-                                $("#status").removeClass("text-danger");
-                                $("#status").html("Face Detected");
-                                crop(result.image.toDataURL('image/jpg'), result.data[0])
-                                    .then((image) => {
-                                        pictures.push(image);
+                            if (capturing) {
+                                // check if face is detected
+                                if (result.data.length > 0) {
+                                    $("#status").addClass("text-success");
+                                    $("#status").removeClass("text-danger");
+                                    $("#status").html("Face Detected");
+                                    crop(result.image.toDataURL('image/jpg'), result.data[0])
+                                        .then((image) => {
+                                            pictures.push(image);
 
-                                        captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
+                                            captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
 
-                                        flash.removeClass('display');
-                                        flash.addClass('display')
-                                        flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
-                                            function (e) {
-                                                flash.removeClass('display');
-                                            });
-                                    })
-                            } else {
-                                $("#status").removeClass("text-success");
-                                $("#status").addClass("text-danger");
-                                $("#status").html("Face Not Detected");
+                                            flash.removeClass('display');
+                                            flash.addClass('display')
+                                            flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
+                                                function (e) {
+                                                    flash.removeClass('display');
+                                                });
+                                        })
+                                } else {
+                                    $("#status").removeClass("text-success");
+                                    $("#status").addClass("text-danger");
+                                    $("#status").html("Face Not Detected");
+                                }
                             }
                         })
+                    } else {
+                        if (!recording) {
+                            capturing = false;
+                            switchBtn.disabled = false;
+                            audioBtn.attr("disabled", false);
+                            uploadBtn.disabled = false;
+                        }
                     }
 
                     if (pictures.length >= pNum) {
-                        capturing = false;
+                        if (!recording) {
+                            capturing = false;
+                            switchBtn.disabled = false;
+                            audioBtn.attr("disabled", false);
+                            uploadBtn.disabled = false;
+                        }
                         captureBtn.html("Done!");
                         captureBtn.attr("disabled", true);
                     }
@@ -133,8 +155,14 @@ function startup() {
     captureBtn.click(function (ev) {
         capturing = !capturing;
         if (capturing) {
+            switchBtn.disabled = true;
+            audioBtn.attr("disabled", true);
+            uploadBtn.disabled = true;
             captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
         } else {
+            switchBtn.disabled = false;
+            audioBtn.attr("disabled", false);
+            uploadBtn.disabled = false;
             captureBtn.html("Start Scanning Face");
         }
 
@@ -147,71 +175,85 @@ function startup() {
     }, false);
 
     uploadBtn.addEventListener('click', function (ev) {
+        // Check for errors in form data
         let name = $("#name")
         let errors = false
 
-        // Check if user already exists
-        $.ajax({
-            url: '/api/checkUser',    //api url
-            type: 'POST',   //HTTP method
-            data: {
-                name: name.val()
-            },
-            success: function (response) {
-                // if no user exists check that data is correct
-                if (response) {
-                    // if the username is too short throw error
-                    if (name.val().length < 3) {
-                        name.tooltip('enable')
-                        name.tooltip('show')
-                        errors = true
-
-                        name.on('hidden.bs.tooltip', function () {
-                            name.tooltip('disable')
-                        })
-                    }
-
-                    // if there is less than the min number of pictures throw errot
-                    if (pictures.length < pNum) {
-                        captureBtn.tooltip('enable')
-                        captureBtn.tooltip('show')
-                        errors = true
-
-                        captureBtn.on('hidden.bs.tooltip', function () {
-                            captureBtn.tooltip('disable')
-                        })
-                    }
-
-                    if (voice.length < aNum) {
-                        audioBtn.tooltip('enable');
-                        audioBtn.tooltip('show');
-                        errors = true;
-
-                        audioBtn.on('hidden.bs.tooltip', function() {
-                            audioBtn.tooltip('disable');
-                        })
-                    }
-
-                    // if there are no errors display modal
-                    if (!errors) {
-                        $('#uploadModal').modal({ backdrop: 'static', keyboard: false })
-                    }
-
-                    ev.preventDefault(), false;
-                }
-            },
-            error: function (exception) {
-                console.log(exception)
-                if (exception.responseText) {
-                    let msg = exception.responseText
-
-                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
-                }
+        // if the username is too short or contains spaces throw error
+        if (name.val().length < 3 || hasWhiteSpace(name.val())) {
+            if (hasWhiteSpace(name.val())) {
+                console.log("contains spaces")
+                name.attr('title', 'Username contains spaces')
+                name.attr('data-original-title', 'Username contains spaces')
+            } else {
+                console.log("too short")
+                name.attr('title', 'Username too short')
+                name.attr('data-original-title', 'Username too short')
             }
-        })
+
+            name.tooltip('enable')
+            name.tooltip('show')
+            errors = true
+
+            name.on('hidden.bs.tooltip', function () {
+                name.tooltip('disable')
+            })
+        }
+
+        // if there is less than the min number of pictures throw error
+        if (pictures.length < pNum) {
+            captureBtn.attr('title', 'Not enough images')
+            captureBtn.attr('data-original-title', 'Not enough images')
+            captureBtn.tooltip('enable')
+            captureBtn.tooltip('show')
+            errors = true
+
+            captureBtn.on('hidden.bs.tooltip', function () {
+                captureBtn.tooltip('disable')
+            })
+        }
+
+        // if there is less than the min number of recordings throw error
+        if (voice.length < aNum) {
+            audioBtn.attr('title', 'Not enough recordings')
+            audioBtn.attr('data-original-title', 'Not enough recordings')
+            audioBtn.tooltip('enable')
+            audioBtn.tooltip('show')
+            errors = true
+
+            audioBtn.on('hidden.bs.tooltip', function () {
+                audioBtn.tooltip('disable')
+            })
+        }
+
+        // if there are no errors check if user already exists
+        if (!errors) {
+            $.ajax({
+                url: '/api/checkUser',    //api url
+                type: 'POST',   //HTTP method
+                data: {
+                    name: name.val()
+                },
+                success: function (response) {
+                    // if no user exists display modal 
+                    $('#uploadModal').modal({ backdrop: 'static', keyboard: false })
+                    ev.preventDefault(), false;
+                },
+                error: function (exception) {
+                    console.log(exception)
+                    if (exception.responseText) {
+                        let msg = exception.responseText
+
+                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger alert-dismissible fade show animated shake' role='alert'>" + msg + "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><i class='fas fa-times fa-sm'></i></button></div>"
+                    }
+                }
+            })
+        }
     })
 
     audioBtn.click(function (ev) {
+        captureBtn.attr("disabled", true);
+        uploadBtn.disabled = true;
         recordVoice();
         ev.preventDefault();
     })
@@ -360,6 +402,10 @@ function recordVoice() {
 
                 setTimeout(() => {
                     mediaRecorder.stop();
+                    if (pictures.length < pNum) {
+                        captureBtn.attr("disabled", false);
+                    }
+                    uploadBtn.disabled = false;
                     console.log("Recording Finished");
                     $("#audio").html("Recording Finished (" + (voice.length + 1) + "/3)");
                     recording = !recording;
@@ -369,6 +415,10 @@ function recordVoice() {
     else if (voice.length > 2) {
         console.log("Have already collected the correct number of recordings");
         $("#audio").html("Total recordings have already been collected");
+        if (pictures.length < pNum) {
+            captureBtn.attr("disabled", false);
+        }
+        uploadBtn.disabled = false;
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");
@@ -489,6 +539,21 @@ function urlBase64ToUint8Array(base64String) {
     }
     return outputArray;
 }
+
+// checks for white space in input string and returns boolean
+function hasWhiteSpace(string) {
+    return /\s/g.test(string);
+}
+
+$("input#name").on({
+    keydown: function (e) {
+        if (e.which === 32)
+            return false;
+    },
+    change: function () {
+        this.value = this.value.replace(/\s/g, "");
+    }
+});
 
 // Run startup on window load
 window.addEventListener('load', startup, false);
