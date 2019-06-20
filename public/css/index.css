@@ -1,15 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Nunito');
-html, body {
+html {
     height: 100%;
     width: 100%;
     margin: 0;
-    display: table;
 }
 
 body {
-    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/1920x1080/?aerial,nature');
-    background-position: center;
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://source.unsplash.com/1920x1080/?aerial,nature') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
     background-size: cover;
+}
+
+#globalWrapper {
+    min-height: 100vh
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -25,6 +32,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .title {
     font-size: 4em
+}
+
+.btn {
+    border-radius: 12px;
 }
 
 .circle-btn {
@@ -152,4 +163,53 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 100%;
     text-decoration: none;
     color: initial;
+}
+
+.modal-content {
+    /* fallback for old browsers */
+    background: #FEAC5E;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(45deg, #4BC0C8, #C779D0, #FEAC5E);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(45deg, #4BC0C8, #C779D0, #FEAC5E);
+    background-size: 600% 600%;
+    -webkit-animation: scroll 30s ease infinite;
+    -moz-animation: scroll 30s ease infinite;
+    animation: scroll 30s ease infinite;
+}
+
+@-webkit-keyframes scroll {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@-moz-keyframes scroll {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@keyframes scroll {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
 }
