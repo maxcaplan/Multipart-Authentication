@@ -35,7 +35,6 @@ def train_gmm(name):
         kind = filetype.guess(path)
         if kind.extension != "wav":
             command = "ffmpeg -i " + path + " -ab 160k -ac 2 -ar 44100 -vn " + fname
-            print(command)
             subprocess.call(command, shell=True)
             os.remove(path)
             os.rename(ROOT_DIR + '/voice-identifier/' + fname, path)
@@ -64,4 +63,5 @@ def train_gmm(name):
 
             features = np.asarray(())
             count = 0
+            return gmm
         count = count + 1

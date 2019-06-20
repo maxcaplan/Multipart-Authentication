@@ -219,33 +219,83 @@ function startup() {
     notificationBtn.addEventListener('click', function (ev) {
         if ('serviceWorker' in navigator) {
             register()
-                .then(result => {
-                    subscribe(result)
-                        .then(subscription => {
-                            $.ajax({
-                                url: '/api/data',    //api url
-                                type: 'POST',   //HTTP method
-                                data: {
-                                    name: $("#name").val(),
-                                    data: pictures,
-                                    audio: voice,
-                                    subscription: JSON.stringify(subscription)
-                                },
-                                success: function (response) {
-                                    if (response) {
-                                        location.assign("/")
-                                    }
-                                },
-                                error: function (exception) {
-                                    console.log(exception)
-                                    if (exception.responseJSON) {
-                                        let msg = exception.responseJSON.error
+                .then(reg => {
+                    var serviceWorker;
+                    if (reg.installing) {
+                        serviceWorker = reg.installing;
+                        // console.log('Service worker installing');
+                    } else if (reg.waiting) {
+                        serviceWorker = reg.waiting;
+                        // console.log('Service worker installed & waiting');
+                    } else if (reg.active) {
+                        serviceWorker = reg.active;
+                        // console.log('Service worker active');
+                    }
 
-                                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
-                                    }
-                                }
-                            })
-                        })
+                    // wait for the service worker to become activated
+                    if (serviceWorker) {
+                        console.log("sw current state", serviceWorker.state);
+                        if (serviceWorker.state == "activated") {
+                            //If push subscription wasn't done yet do it here
+                            subscribe(reg)
+                                .then(subscription => {
+                                    $.ajax({
+                                        url: '/api/data',    //api url
+                                        type: 'POST',   //HTTP method
+                                        data: {
+                                            name: $("#name").val(),
+                                            data: pictures,
+                                            audio: voice,
+                                            subscription: JSON.stringify(subscription)
+                                        },
+                                        success: function (response) {
+                                            if (response) {
+                                                location.assign("/")
+                                            }
+                                        },
+                                        error: function (exception) {
+                                            console.log(exception)
+                                            if (exception.responseJSON) {
+                                                let msg = exception.responseJSON.error
+
+                                                document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                                            }
+                                        }
+                                    })
+                                })
+                        }
+
+                        serviceWorker.addEventListener("statechange", function (e) {
+                            if (e.target.state == "activated") {
+                                subscribe(reg)
+                                    .then(subscription => {
+                                        $.ajax({
+                                            url: '/api/data',    //api url
+                                            type: 'POST',   //HTTP method
+                                            data: {
+                                                name: $("#name").val(),
+                                                data: pictures,
+                                                audio: voice,
+                                                subscription: JSON.stringify(subscription)
+                                            },
+                                            success: function (response) {
+                                                if (response) {
+                                                    location.assign("/")
+                                                }
+                                            },
+                                            error: function (exception) {
+                                                console.log(exception)
+                                                if (exception.responseJSON) {
+                                                    let msg = exception.responseJSON.error
+
+                                                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                                                }
+                                            }
+                                        })
+                                    })
+                            }
+                        });
+                    }
                 })
         }
     });
