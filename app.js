@@ -145,7 +145,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         trainDir: trainDir,
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
-                        subscription: subscription
+                        subscription: subscription,
                     }
 
                     if (!fs.existsSync(parentDir)) {
@@ -179,9 +179,10 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         }
                     }
 
-                    PythonShell.run("./voice-identifier/train_gmm.py", {args: [req.body.name]}, function(err, results) {
-                        if (err) throw (err);
-                        console.log(results);
+                    let gmmShell = new PythonShell('./voice-identifier/train_gmm.py');
+                    gmmShell.send(JSON.stringify({name: req.body.name}));
+                    gmmShell.on('message', (message) => {
+                        console.log(message);
                     });
 
                     // add none user images to training and validation
@@ -193,8 +194,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                 if (err) {
                                     res.send(err)
                                 } else {
-                                    console.log("Beginning training")
-                                    res.redirect("/")
+                                    console.log("Beginning training");
+                                    res.redirect("/");
                                     // begin training face identification model
                                     let trainShell = new PythonShell('./python/train.py');
                                     trainShell.send(JSON.stringify({ name: req.body.name, trainingDir: trainDir, validationDir: validationDir, epochs: 10, plot: false, model: null }));
@@ -220,7 +221,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                 }
                             })
                         }
-                    })
+                    });
                 } else {
                     res.status(409).send("account already exists");
                 }
