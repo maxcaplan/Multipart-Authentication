@@ -173,7 +173,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
 
                     PythonShell.run("./voice-identifier/train_gmm.py", {args: [req.body.name]}, function(err, results) {
                         if (err) throw (err);
-                        console.log("GMM finished training");
+                        console.log(results);
                     });
 
                     // add none user images to training and validation
