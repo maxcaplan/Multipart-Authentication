@@ -24,15 +24,17 @@ self.addEventListener('push', ev => {
                 })
 
             } else {
-                // display browser notification
-                self.registration.showNotification(data.title, {
-                    body: data.body,
-                    icon: '../assets/icons/mstile-310x310.png',
-                    vibrate: [500, 100, 500],
-                    data: {
-                        url: data.url
-                    }
-                });
+                ev.waitUntil(
+                    // display browser notification
+                    self.registration.showNotification(data.title, {
+                        body: data.body,
+                        icon: '../assets/icons/mstile-310x310.png',
+                        vibrate: [500, 100, 500],
+                        data: {
+                            url: data.url
+                        }
+                    })
+                )
             }
 
         })
