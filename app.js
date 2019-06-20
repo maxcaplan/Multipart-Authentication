@@ -118,13 +118,20 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         app.post('/api/data', function (req, res) {
             var subscription = false
             var payload = false
+            var host
+
+            if(server.address().address = "::") {
+                host = 'localhost'
+            } else {
+                host = server.address().address
+            }
 
             if (req.body.subscription != false) {
                 subscription = JSON.parse(req.body.subscription)
                 payload = JSON.stringify({
                     title: 'Your Account is Ready!',
                     body: 'The Account ' + req.body.name + ' is ready to be used',
-                    url: 'localhost:8080/login.html'
+                    url: host + ':' + port + "/login.html"
                 });
             }
 
@@ -146,6 +153,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         trainDir: trainDir,
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
+                        subscription: subscription
                     }
 
                     if (!fs.existsSync(parentDir)) {
@@ -159,8 +167,8 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         fs.mkdirSync(parentDir + "audio/")
                     }
 
-                    for (let i=0; i<req.body.audio.length; i++) {
-                        fs.writeFileSync(parentDir + 'audio/' + (i+1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                    for (let i = 0; i < req.body.audio.length; i++) {
+                        fs.writeFileSync(parentDir + 'audio/' + (i + 1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {
@@ -237,7 +245,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             res.redirect('/')
         });
 
-        app.listen(port, () => console.log(`Listening on port ${port}`))
+        let server = app.listen(port, () => console.log(`Listening on port ${port}`))
     }
 })
 
