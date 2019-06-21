@@ -1,0 +1,10 @@
+matplotlib==2.2.4
+tensorflow==1.13.1
+opencv_python==4.1.0.25
+scipy==1.2.1
+numpy==1.16.2
+Pillow==6.0.0
+filetype==1.0.5
+pyaudio==0.2.11
+python_speech_features==0.6
+scikit_learn==0.21.2
