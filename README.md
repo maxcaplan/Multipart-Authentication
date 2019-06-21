@@ -5,6 +5,7 @@ An experiment with multi-part authentication using machine learning
 ---
 
 #### Table of Contents:
++ [Prerequisites](#prerequisites)
 + [Installation and Setup](#installation)
 + [Usage](#usage)
 + [Contributing](#contributing)
@@ -12,13 +13,35 @@ An experiment with multi-part authentication using machine learning
 
 ---
 
+<a name="prerequisites"></a>
+## Prerequisites 
+
+To run this project your server machine needs to have the following installed:
++ [Python 3](https://www.python.org/)
++ [pip3](https://pypi.org/)
++ [Node](https://nodejs.org/en/)
+
+follow the installation instructions specific to your OS
+
 <a name="installation"></a>
 ## Installation and Setup
 
-1. **Use the package manager [npm](https://www.npmjs.com) to install all of the projects dependency.**
+1. **Use the Node package manager [npm](https://www.npmjs.com) to install all of the projects Node dependencies.**
 
 ```bash
 npm install
+```
+
+2. **Use the Python 3 package manager [pip](https://pypi.org/project/pip/) to install all of the projects Python dependencies**
+
+```bash
+pip3 install -r requirements.txt
+```
+
+If you are running *Ubuntu* run the following command to make sure Tkinter is properly installed:
+
+```bash
+sudo apt-get install python3-tk
 ```
 
 <br/>
