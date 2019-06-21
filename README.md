@@ -99,11 +99,11 @@ npm run dev
 
 ---
 
-You can change the default port (80080) the server runs on in ``package.json``:
+You can change the default port (8080) the server runs on in ``package.json``:
 
 ```JSON 
 "config": {
-    "port": <Your Port Here>
+    "port": "<Your Port Here>"
 }
 ```
 
