@@ -235,7 +235,7 @@ function startup() {
                     name: name.val()
                 },
                 success: function (response) {
-                    // if no user exists display modal 
+                    // if no user exists display modal
                     $('#uploadModal').modal({ backdrop: 'static', keyboard: false })
                     ev.preventDefault(), false;
                 },

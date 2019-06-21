@@ -3,16 +3,20 @@ var width = 320;    // We will scale the photo width to this
 var height = 0;     // This will be computed based on the input stream
 
 var streaming = false;
+var recording = false;
 
 var video = null;
 var canvas = null;
 var switchBtn = null;
+var audioBtn = null;
 
 var camIndex = 0;
+var voice = [];
 
 function startup() {
     video = document.getElementById('loginVideo');
     switchBtn = document.getElementById('switch');
+    audioBtn = $("#audio");
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -42,6 +46,55 @@ function startup() {
         switchcamera();
         ev.preventDefault();
     }, false);
+
+    audioBtn.click(function(ev) {
+        record_voice();
+        ev.preventDefault()
+    })
+
+    function record_voice() {
+        recording = !recording;
+        if(recording && voice.length === 0){
+            const audioChunks = [];
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start(0.25);
+                    $("#audio").html("Recording... (Please say your name)");
+                    console.log("Recording...");
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    // todo determine where comparison files will be located
+                    mediaRecorder.addEventListener("stop", event => {
+                        audioblob = new Blob(audioChunks, { 'type': 'audio/wav' });
+                        var fileReader = new FileReader();
+                        fileReader.readAsDataURL(audioblob);
+                        fileReader.onload = function (ev) {
+                            voice.push(fileReader.result);
+                            console.log(ev)
+                        };
+                    });
+
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                        console.log("Recording Finished");
+                        $("#audio").html("Recording Finished");
+                        recording = !recording;
+                    }, 3000);
+                });
+        }
+        else if (voice.length > 0) {
+            console.log("Audio file has already been recorded");
+            $("#audio").html("Audio file has already been recorded");
+        }
+        else {
+            console.log("Recording already in progress");
+            recording = !recording
+        }
+    }
 
     function switchcamera() {
         var listDevices = [];
@@ -79,6 +132,7 @@ function startup() {
             })
         });
     }
+
     // captureBtn.addEventListener('click', function (ev) {
     //     takepicture();
     //     ev.preventDefault();
