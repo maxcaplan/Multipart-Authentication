@@ -9,6 +9,8 @@ var video = null;
 var canvas = null;
 var switchBtn = null;
 var audioBtn = null;
+var loginBtn = null;
+var name = null;
 
 var camIndex = 0;
 var voice = [];
@@ -17,6 +19,8 @@ function startup() {
     video = document.getElementById('loginVideo');
     switchBtn = document.getElementById('switch');
     audioBtn = $("#audio");
+    name = $("#name");
+    loginBtn = document.getElementById('upload');
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function (stream) {
@@ -50,7 +54,31 @@ function startup() {
     audioBtn.click(function(ev) {
         record_voice();
         ev.preventDefault()
-    })
+    });
+
+    loginBtn.addEventListener('click', function(ev) {
+        $.ajax({
+            url: '/api/login',
+            type: 'POST',
+            data: {
+                name: $("#name").val(),
+                audio: voice,
+            },
+            success: function (response) {
+                if (response) {
+                    location.assign("/")
+                }
+            },
+            error: function (exception) {
+                console.log(exception);
+                if (exception.responseJSON) {
+                    let msg = exception.responseJSON.error;
+
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
+            }
+        })
+    });
 
     function record_voice() {
         recording = !recording;
@@ -67,7 +95,6 @@ function startup() {
                         audioChunks.push(event.data);
                     });
 
-                    // todo determine where comparison files will be located
                     mediaRecorder.addEventListener("stop", event => {
                         audioblob = new Blob(audioChunks, { 'type': 'audio/wav' });
                         var fileReader = new FileReader();

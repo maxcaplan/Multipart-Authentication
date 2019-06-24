@@ -16,12 +16,12 @@ var captureBtn = null;
 var switchBtn = null;
 var uploadBtn = null;
 var audioBtn = null;
-var load = null
-var notificationBtn = null
-var noThanksBtn = null
+var load = null;
+var notificationBtn = null;
+var noThanksBtn = null;
 
 // Data Variables
-var pictures = []
+var pictures = [];
 var voice = [];
 var constraints = null;
 var camIndex = 0;
@@ -38,16 +38,16 @@ let audioblob = null;
 
 function startup() {
     // Get page elements
-    collapse = $("#faceID")
+    collapse = $("#faceID");
     video = document.getElementById('videoElement');
     flash = $("#flash");
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
-    audioBtn = $("#audio")
-    load = $('#modelLoad')
-    notificationBtn = document.getElementById('notificationBtn')
-    noThanksBtn = document.getElementById('noThanksBtn')
+    audioBtn = $("#audio");
+    load = $('#modelLoad');
+    notificationBtn = document.getElementById('notificationBtn');
+    noThanksBtn = document.getElementById('noThanksBtn');
 
     uploadBtn.disabled = true;
     captureBtn.disabled = true;
@@ -84,7 +84,7 @@ function startup() {
             loadModel().then(() => {
                 $("#loadWrapper").addClass("collapse-anim");
                 $("#loadLabel").hide();
-                collapse.collapse('show')
+                collapse.collapse('show');
                 uploadBtn.disabled = false;
             }).then(() => {
                 setInterval(() => {
@@ -113,7 +113,7 @@ function startup() {
                                             captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
 
                                             flash.removeClass('display');
-                                            flash.addClass('display')
+                                            flash.addClass('display');
                                             flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
                                                 function (e) {
                                                     flash.removeClass('display');
@@ -176,24 +176,24 @@ function startup() {
 
     uploadBtn.addEventListener('click', function (ev) {
         // Check for errors in form data
-        let name = $("#name")
-        let errors = false
+        let name = $("#name");
+        let errors = false;
 
         // if the username is too short or contains spaces throw error
         if (name.val().length < 3 || hasWhiteSpace(name.val())) {
             if (hasWhiteSpace(name.val())) {
-                console.log("contains spaces")
-                name.attr('title', 'Username contains spaces')
+                console.log("contains spaces");
+                name.attr('title', 'Username contains spaces');
                 name.attr('data-original-title', 'Username contains spaces')
             } else {
-                console.log("too short")
-                name.attr('title', 'Username too short')
+                console.log("too short");
+                name.attr('title', 'Username too short');
                 name.attr('data-original-title', 'Username too short')
             }
 
-            name.tooltip('enable')
-            name.tooltip('show')
-            errors = true
+            name.tooltip('enable');
+            name.tooltip('show');
+            errors = true;
 
             name.on('hidden.bs.tooltip', function () {
                 name.tooltip('disable')
@@ -202,11 +202,11 @@ function startup() {
 
         // if there is less than the min number of pictures throw error
         if (pictures.length < pNum) {
-            captureBtn.attr('title', 'Not enough images')
-            captureBtn.attr('data-original-title', 'Not enough images')
-            captureBtn.tooltip('enable')
-            captureBtn.tooltip('show')
-            errors = true
+            captureBtn.attr('title', 'Not enough images');
+            captureBtn.attr('data-original-title', 'Not enough images');
+            captureBtn.tooltip('enable');
+            captureBtn.tooltip('show');
+            errors = true;
 
             captureBtn.on('hidden.bs.tooltip', function () {
                 captureBtn.tooltip('disable')
@@ -215,11 +215,11 @@ function startup() {
 
         // if there is less than the min number of recordings throw error
         if (voice.length < aNum) {
-            audioBtn.attr('title', 'Not enough recordings')
-            audioBtn.attr('data-original-title', 'Not enough recordings')
-            audioBtn.tooltip('enable')
-            audioBtn.tooltip('show')
-            errors = true
+            audioBtn.attr('title', 'Not enough recordings');
+            audioBtn.attr('data-original-title', 'Not enough recordings');
+            audioBtn.tooltip('enable');
+            audioBtn.tooltip('show');
+            errors = true;
 
             audioBtn.on('hidden.bs.tooltip', function () {
                 audioBtn.tooltip('disable')
@@ -236,27 +236,27 @@ function startup() {
                 },
                 success: function (response) {
                     // if no user exists display modal
-                    $('#uploadModal').modal({ backdrop: 'static', keyboard: false })
+                    $('#uploadModal').modal({ backdrop: 'static', keyboard: false });
                     ev.preventDefault(), false;
                 },
                 error: function (exception) {
-                    console.log(exception)
+                    console.log(exception);
                     if (exception.responseText) {
-                        let msg = exception.responseText
+                        let msg = exception.responseText;
 
                         document.getElementById("errors").innerHTML = "<div class='alert alert-danger alert-dismissible fade show animated shake' role='alert'>" + msg + "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><i class='fas fa-times fa-sm'></i></button></div>"
                     }
                 }
             })
         }
-    })
+    });
 
     audioBtn.click(function (ev) {
         captureBtn.attr("disabled", true);
         uploadBtn.disabled = true;
         recordVoice();
         ev.preventDefault();
-    })
+    });
 
     notificationBtn.addEventListener('click', function (ev) {
         if ('serviceWorker' in navigator) {
@@ -296,9 +296,9 @@ function startup() {
                                             }
                                         },
                                         error: function (exception) {
-                                            console.log(exception)
+                                            console.log(exception);
                                             if (exception.responseJSON) {
-                                                let msg = exception.responseJSON.error
+                                                let msg = exception.responseJSON.error;
 
                                                 document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                                             }
@@ -326,9 +326,9 @@ function startup() {
                                                 }
                                             },
                                             error: function (exception) {
-                                                console.log(exception)
+                                                console.log(exception);
                                                 if (exception.responseJSON) {
-                                                    let msg = exception.responseJSON.error
+                                                    let msg = exception.responseJSON.error;
 
                                                     document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                                                 }
@@ -484,7 +484,7 @@ function crop(img, box) {
         image.onload = () => {
             ctx.drawImage(image, -resize.box.x, -resize.box.y, width, height);
             resolved(cc.toDataURL('image/jpg'));
-        }
+        };
         image.src = img
     })
 }
@@ -516,7 +516,7 @@ async function register() {
 
 // Create a subscription to send to the server
 async function subscribe(worker) {
-    console.log("Creating subscription...")
+    console.log("Creating subscription...");
     return await worker.pushManager.
         subscribe({
             userVisibleOnly: true,

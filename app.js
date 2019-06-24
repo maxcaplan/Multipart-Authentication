@@ -146,7 +146,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
                         subscription: subscription,
-                    }
+                    };
 
                     if (!fs.existsSync(parentDir)) {
                         fs.mkdirSync(parentDir);
@@ -230,7 +230,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
 
         app.post('/api/checkUser', (req, res) => {
             db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
-                if (err) return console.log(err)
+                if (err) return console.log(err);
                 if (results.length > 0) {
                     res.status(409).send("account already exists")
                 } else {
@@ -245,8 +245,39 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         });
 
         let server = app.listen(port, () => console.log(`Listening on port ${port}`))
+
+        app.post('/api/login', (req, res) => {
+            db.collection('users').find({"name": req.body.name}).toArray(function(err, results) {
+                if (err) console.log(err);
+                if (results.length === 0) {
+                    console.log("Account does not exist, could not sign into specified name");
+                    res.status(404).send("Account does not exist, could not sign into specified name")
+                }
+                else{
+                    let parentDir = "./users/" + req.body.name + "/";
+                    if(!fs.existsSync(parentDir + 'audioComparison/')){
+                        fs.mkdirSync(parentDir + 'audioComparison/');
+                        console.log("'audioComparison' directory successfully created");
+                        fs.writeFileSync(parentDir + 'audioComparison/loginAttempt.wav', Buffer.from(req.body.audio.toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                        console.log("'loginAttempt.wav' has been successfully uploaded to the database")
+                    }
+                    else if(fs.existsSync(parentDir + 'audioComparison/') && !fs.existsSync(parentDir + 'audioComparison/loginAttempt.wav')) {
+                        fs.writeFileSync(parentDir + 'audioComparison/loginAttempt.wav', Buffer.from(req.body.audio.toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                        console.log("'audioComparison' directory already exists");
+                        console.log("'loginAttempt.wav' has successfully been uploaded to the database")
+                    }
+                    else if(fs.existsSync(parentDir + 'audioComparison/loginAttempt.wav')) {
+                        console.log("'loginAttempt.wav' already exists");
+                        fs.unlinkSync(parentDir + 'audioComparison/loginAttempt.wav');
+                        console.log("existing 'loginAttempt.wav' has successfully been removed from directory");
+                        fs.writeFileSync(parentDir + 'audioComparison/loginAttempt.wav', Buffer.from(req.body.audio.toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                        console.log("new 'loginAttempt.wav' has been successfully uploaded to database")
+                    }
+                }
+            });
+        })
     }
-})
+});
 
 function fallback(error) {
     console.log(error);
