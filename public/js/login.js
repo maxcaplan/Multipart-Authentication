@@ -101,9 +101,7 @@ function startup() {
                 audio: voice,
             },
             success: function (response) {
-                if (response) {
-                    location.assign("/")
-                }
+                console.log(response);
             },
             error: function (exception) {
                 console.log(exception);

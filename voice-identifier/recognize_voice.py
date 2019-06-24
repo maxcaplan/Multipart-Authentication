@@ -71,6 +71,8 @@ def recognize_voice(name):
     else:
         print("[ACCESS DENIED] Voice does not match the specified user")
 
+    return authentication
+
 
 if __name__ == '__main__':
     recognize_voice(name)
