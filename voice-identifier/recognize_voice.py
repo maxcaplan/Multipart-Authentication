@@ -1,22 +1,23 @@
+import subprocess
 import pyaudio
-import wave
 import os
 import sys
-import time
 import json
 import pickle
 import numpy as np
+from filetype import filetype
 from scipy.io.wavfile import read
 
 from feature_extraction import extract_features
 
 # HYPERPARAMETERS
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) + '/'
+DATABASE_DIR = './users/'
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
-FILE_NAME = "./test.wav"
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -24,45 +25,31 @@ data_passed = json.loads(lines)
 name = str(data_passed['name'])
 
 
-# todo fetch .wav files recorded from application
 def recognize_voice(name):
-    audio = pyaudio.PyAudio()
-
-    # begin recording speaker
-    stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
-
-    time.sleep(2.0)
-    print("Recording...")
-    frames = []
-
-    for i in range(0, int(RATE/CHUNK*RECORD_SECONDS)):
-        data = stream.read(CHUNK)
-        frames.append(data)
-    print("Recording finished")
-
-    # end recording
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-
-    # save recording to wav file
-    # todo determine where files for comparing will be saved
-    with wave.open(FILE_NAME, 'wb') as waveFile:
-        waveFile.setnchannels(CHANNELS)
-        waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-        waveFile.setframerate(RATE)
-        waveFile.writeframes(b''.join(frames))
-        waveFile.close()
-
-    modelpath = "./users" + name + "/gmm-model/" + name + ".gmm"
+    # setting paths to database directory and .gmm files in models
+    test_file_dir = ROOT_DIR + DATABASE_DIR + name + '/audioComparison/'
+    modelpath = ROOT_DIR + "users/" + str(name) + "/gmm-model/" + str(name) + ".gmm"
     if os.path.exists(modelpath):
         model = pickle.load(open(modelpath, 'rb'))
     else:
         print("There is no GMM in this specified path")
         return
 
+    for path in os.listdir(test_file_dir):
+        path = os.path.join(test_file_dir, path)
+        fname = os.path.basename(path)
+
+        # check that the audio files are saved under the correct extension
+        # if file extension is not '.wav' then convert to '.wav' format
+        kind = filetype.guess(path)
+        if kind.extension != "wav":
+            command = "ffmpeg -i " + path + " -ab 160k -ac 2 -ar 44100 -vn " + fname
+            subprocess.call(command, shell=True)
+            os.remove(path)
+            os.rename('./' + fname, path)
+
     # read the test files
-    sr, audio = read(FILE_NAME)
+    sr, audio = read(test_file_dir + "loginAttempt.wav")
 
     # extract the mfcc features from the file
     vector = extract_features(audio, sr)
