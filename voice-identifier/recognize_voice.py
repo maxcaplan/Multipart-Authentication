@@ -4,7 +4,6 @@ import os
 import sys
 import json
 import pickle
-import numpy as np
 from filetype import filetype
 from scipy.io.wavfile import read
 
@@ -18,6 +17,7 @@ CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
+threshold = -35
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -54,10 +54,11 @@ def recognize_voice(name):
     # extract the mfcc features from the file
     vector = extract_features(audio, sr)
 
-    score = model.score(vector)
-    log_likelihood = score.sum()
+    # get the likelihood score that 'loginAttempt.wav' matches the GMM (outputs a log() value of the score)
+    log_likelihood = model.score(vector)
 
-    if log_likelihood >= np.log(0.75):
+    # if log_likelihood is greater than threshold grant access
+    if log_likelihood >= threshold:
         authentication = True
     else:
         authentication = False
