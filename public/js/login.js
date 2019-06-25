@@ -103,6 +103,13 @@ function startup() {
             success: function (response) {
                 console.log(response);
                 window.alert(response);
+                if(response.startsWith("[ACCESS GRANTED]")) {
+                    // todo grant access to page signing into
+                    console.print("Move to next page")
+                }
+                else {
+                    location.assign("/")
+                }
             },
             error: function (exception) {
                 console.log(exception);
