@@ -1,5 +1,6 @@
-const publicVapidKey = 'BNs4y954y27kjvbj5tg4CuJYO-cGC4tnyjPST2bwuUKLfuHuDOdyJqGh1HHhowVw9DL0rvWaEr0j80jcF4KQlmc'
+const publicVapidKey = 'BNs4y954y27kjvbj5tg4CuJYO-cGC4tnyjPST2bwuUKLfuHuDOdyJqGh1HHhowVw9DL0rvWaEr0j80jcF4KQlmc';
 
+// Video Element parameters
 var width = 320;
 var height = 0;
 
@@ -98,7 +99,7 @@ function startup() {
                             context.drawImage(video, 0, 0, width, height);
                         }
 
-                        // pass frmae into face detector
+                        // pass frame into face detector
                         detectFaces(frame).then((result) => {
                             if (capturing) {
                                 // check if face is detected

@@ -274,6 +274,12 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         console.log("new 'loginAttempt.wav' has been successfully uploaded to database")
                     }
                 }
+                let voiceShell = new PythonShell('./voice-identifier/recognize_voice.py');
+                voiceShell.send(JSON.stringify( {name: req.body.name}));
+                voiceShell.on('message', (message) => {
+                    console.log(message);
+                    res.send(JSON.stringify(message))
+                });
             });
         })
     }

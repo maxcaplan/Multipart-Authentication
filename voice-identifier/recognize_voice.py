@@ -4,10 +4,13 @@ import os
 import sys
 import json
 import pickle
+import warnings
 from filetype import filetype
 from scipy.io.wavfile import read
 
 from feature_extraction import extract_features
+
+warnings.simplefilter("ignore")
 
 # HYPERPARAMETERS
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) + '/'
@@ -27,8 +30,8 @@ name = str(data_passed['name'])
 
 def recognize_voice(name):
     # setting paths to database directory and .gmm files in models
-    test_file_dir = ROOT_DIR + DATABASE_DIR + name + '/audioComparison/'
-    modelpath = ROOT_DIR + "users/" + str(name) + "/gmm-model/" + str(name) + ".gmm"
+    test_file_dir = DATABASE_DIR + name + '/audioComparison/'
+    modelpath = DATABASE_DIR + str(name) + "/gmm-model/" + str(name) + ".gmm"
     if os.path.exists(modelpath):
         model = pickle.load(open(modelpath, 'rb'))
     else:
@@ -67,6 +70,7 @@ def recognize_voice(name):
         print("[ACCESS GRANTED] Voice matches the specified user")
     else:
         print("[ACCESS DENIED] Voice does not match the specified user")
+    return authentication
 
 
 if __name__ == '__main__':
