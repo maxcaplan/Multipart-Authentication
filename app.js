@@ -278,6 +278,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                 voiceShell.send(JSON.stringify( {name: req.body.name}));
                 voiceShell.on('message', (message) => {
                     console.log(message);
+                    res.send(JSON.stringify(message))
                 });
             });
         })

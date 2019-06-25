@@ -102,12 +102,12 @@ function startup() {
             },
             success: function (response) {
                 console.log(response);
+                window.alert(response);
             },
             error: function (exception) {
                 console.log(exception);
                 if (exception.responseJSON) {
                     let msg = exception.responseJSON.error;
-
                     document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                 }
             }
