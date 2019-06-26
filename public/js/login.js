@@ -11,7 +11,6 @@ var recording = false;
 var collapse = null;
 var video = null;
 var flash = null;
-var status = null;
 var canvas = null;
 var captureBtn = null;
 var switchBtn = null;
@@ -35,7 +34,6 @@ function startup() {
     collapse = $("#faceID");
     video = document.getElementById('loginVideo');
     flash = $("#flash");
-    status = $("#status");
     captureBtn = $("#capture");
     switchBtn = document.getElementById('switch');
     loginBtn = document.getElementById('upload');
@@ -81,7 +79,7 @@ function startup() {
                 setInterval(() => {
                     if (capturing && face.length < 1) {
                         // capture frames from video stream
-                        let frame = document.getElementById("canvas");
+                        let frame = document.createElement("canvas");
                         var context = frame.getContext('2d');
                         if (width && height) {
                             frame.width = width;
@@ -94,9 +92,9 @@ function startup() {
                             if (capturing) {
                                 // check if a face is detected
                                 if (result.data.length > 0) {
-                                    status.addClass("text-success");
-                                    status.removeClass("text-danger");
-                                    status.html("Face Detected");
+                                    $("#status").addClass("text-success");
+                                    $("#status").removeClass("text-danger");
+                                    $("#status").html("Face Detected");
                                     crop(result.image.toDataURL('image/jpg'), result.data[0])
                                         .then((image) => {
                                             face.push(image);
@@ -109,9 +107,9 @@ function startup() {
                                                 });
                                         })
                                 } else {
-                                    status.removeClass("test-success");
-                                    status.addClass("text-danger");
-                                    status.html("Face Not Detected");
+                                    $("#status").removeClass("test-success");
+                                    $("#status").addClass("text-danger");
+                                    $("#status").html("Face Not Detected");
                                 }
                             }
                         })
@@ -145,7 +143,7 @@ function startup() {
 
     audioBtn.click(function (ev) {
         captureBtn.attr("disabled", true);
-        uploadBtn.disabled = true;
+        loginBtn.disabled = true;
         record_voice();
         ev.preventDefault()
     });
@@ -199,17 +197,18 @@ function startup() {
             type: 'POST',
             data: {
                 name: $("#name").val(),
-                video: face,
+                image: face,
+                model: './models/' + $("#name").val(),
                 audio: voice,
             },
             success: function (response) {
                 console.log(response);
                 window.alert(response);
                 if (response.startsWith('"[ACCESS GRANTED]')) {
-                    // todo grant access to page signing into
                     console.log("Move to next page")
                 } else {
-                    location.assign("/")
+                    console.log("Move to home page ")
+                    //location.assign("/")
                 }
             },
             error: function (exception) {
@@ -258,6 +257,10 @@ function startup() {
 
                     setTimeout(() => {
                         mediaRecorder.stop();
+                        if (face.length < 1) {
+                            captureBtn.attr("disabled", false);
+                        }
+                        loginBtn.disabled = false;
                         console.log("Recording Finished");
                         $("#audio").html("Recording Finished");
                         recording = !recording;

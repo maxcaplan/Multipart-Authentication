@@ -13,7 +13,6 @@ var capturing = false;
 var collapse = null;
 var video = null;
 var flash = null;
-var status = null;
 var captureBtn = null;
 var switchBtn = null;
 var uploadBtn = null;
@@ -43,7 +42,6 @@ function startup() {
     collapse = $("#faceID");
     video = document.getElementById('videoElement');
     flash = $("#flash");
-    status = $("#status");
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
     uploadBtn = document.getElementById('upload');
@@ -106,9 +104,9 @@ function startup() {
                             if (capturing) {
                                 // check if face is detected
                                 if (result.data.length > 0) {
-                                    status.addClass("text-success");
-                                    status.removeClass("text-danger");
-                                    status.html("Face Detected");
+                                    $("#status").addClass("text-success");
+                                    $("#status").removeClass("text-danger");
+                                    $("#status").html("Face Detected");
                                     crop(result.image.toDataURL('image/jpg'), result.data[0])
                                         .then((image) => {
                                             pictures.push(image);
@@ -123,9 +121,9 @@ function startup() {
                                                 });
                                         })
                                 } else {
-                                    status.removeClass("text-success");
-                                    status.addClass("text-danger");
-                                    status.html("Face Not Detected");
+                                    $("#status").removeClass("text-success");
+                                    $("#status").addClass("text-danger");
+                                    $("#status").html("Face Not Detected");
                                 }
                             }
                         })
