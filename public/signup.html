@@ -19,10 +19,10 @@
     <title>Document</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/90a18d65c3.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
-        integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
+          integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
 
     <style>
@@ -108,15 +108,12 @@
                                     <div class="btn-group">
                                         <button id="capture" class="btn btn-info" data-toggle="tooltip"
                                             data-placement="top" title="Scan Face">Start Scanning Face</button>
-                                        <button id="switch" class="btn btn-secondary" data-toggle="tooltip"
-                                                data-placement="top" title="One one video device detected"><i
+                                        <button id="switch" class="btn btn-secondary"><i
                                                 class="fas fa-exchange-alt fa-lg"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
 
                         <div class="row">
                             <div class="col-md-6">
@@ -234,8 +231,8 @@
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', function (event) {
-                $("#notifTitle").text(event.data.title)
-                $("#notifBody").text(event.data.body)
+                $("#notifTitle").text(event.data.title);
+                $("#notifBody").text(event.data.body);
                 $("#notification").toast('show')
             });
         }
