@@ -38,7 +38,8 @@ imgObj = Image.open(io.BytesIO(decode))
 image = cv2.cvtColor(np.array(imgObj), cv2.COLOR_BGR2RGB)
 
 resize = cv2.resize(image, (160, 160))
+img = resize[np.newaxis, :, :, :]
 
 # make prediction
-prediction = model.predict(image, steps=1)  # todo fix error occuring at this line of code "ValueError: Error when checking input: expected mobilenetv2_1.00_160_input to have 4 dimensions, but got array with shape (79, 79, 3)"
+prediction = model.predict(img, steps=1)
 print("Likelihood that this is " + data['name'] + ": " + str(prediction[0][0] * 100) + "%")

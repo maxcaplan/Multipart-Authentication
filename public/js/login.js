@@ -271,6 +271,10 @@ function startup() {
         else if (voice.length > 0) {
             console.log("Audio file has already been recorded");
             $("#audio").html("Audio file has already been recorded");
+            loginBtn.disabled = false;
+            if (face.length < 1) {
+                captureBtn.attr("disabled", false);
+            }
         }
         // if already recording, indicate to user that recording is already taking place
         else {
