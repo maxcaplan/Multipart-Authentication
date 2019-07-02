@@ -25,6 +25,26 @@
           integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
     <script src="./js/login.js"></script>
+
+    <style>
+        .tooltip-inner {
+            max-width: 200px;
+            padding: 3px 8px;
+            color: #fff;
+            text-align: center;
+            background-color: #dc3545;
+            border-radius: .25rem;
+        }
+
+        .tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before,
+        .tooltip.bs-tooltip-top .arrow::before {
+            margin-left: -3px;
+            content: "";
+            border-width: 5px 5px 0;
+            border-top-color: #dc3545;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -100,7 +120,7 @@
                             <div class="col">
                                 <div id="audio-container" class="card w-100 border-0">
                                     <button id="audio" class="text-light" data-toggle="tooltip" data-placement="top"
-                                            title="Not enough recordings"><i class="fas fa-microphone-alt fa-2x"></i>
+                                            title="No Recording"><i class="fas fa-microphone-alt fa-2x"></i>
                                     </button>
                                 </div>
                             </div>
@@ -109,13 +129,13 @@
                         <hr>
                         <div class="row mb-3">
                             <div class="col text-center">
-                                <a class="btn btn-secondary" href="/">
-                                    <i class="fas fa-arrow-left"></i> back
+                                <a class="btn btn-block btn-secondary" href="/">
+                                    back
                                 </a>
                             </div>
                             <div class="col text-center">
-                                <button id="upload" class="btn btn-primary" data-toggle="tooltip" data-placement="top"
-                                title="Username does not exist">Login<i class="fas fa-sign-in-alt"></i>
+                                <button id="upload" class="btn btn-block btn-primary">
+                                    Login
                                 </button>
                             </div>
                         </div>

@@ -36,7 +36,7 @@ function startup() {
     flash = $("#flash");
     captureBtn = $("#capture");
     switchBtn = document.getElementById('switch');
-    loginBtn = document.getElementById('upload');
+    loginBtn = $("#upload");
     audioBtn = $("#audio");
     load = $("#modelLoad");
 
@@ -164,7 +164,7 @@ function startup() {
         ev.preventDefault();
     });
 
-    loginBtn.addEventListener('click', function (ev) {
+    loginBtn.click(function (ev) {
         // Check for errors in form data
         let name = $("#name");
         let errors = false;
@@ -189,67 +189,92 @@ function startup() {
 
             name.on('hidden.bs.tooltip', function () {
                 name.tooltip('disable')
-            })
+            });
         }
 
-        // send post request to app.js through jQuery
-        $.ajax({
-            url: '/api/faceLogin',
-            type: 'POST',
-            data: {
-                name: $("#name").val(),
-                image: face,
-                model: './models/' + $("#name").val(),
-            },
-            success: function (response) {
-                console.log(response);
-                if (response.startsWith('[FACE MATCH]')) {
-                    faceMatch = true;
-                } else {
-                    faceMatch = false;
-                }
-                // since face comparison takes longer than voice, check matches upon completion of face recognition
-                if(faceMatch === true && voiceMatch === true) {
-                    window.alert("[ACCESS GRANTED] Both face and voice of login request match");
-                }
-                else {
-                    window.alert("[ACCESS DENIED] Did not have a match for both face and voice");
-                    location.assign("/");
-                }
-            },
-            error: function (exception) {
-                console.log(exception);
-                if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error;
-                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
-                }
-            }
-        });
+        if(voice.length === 0) {
+            audioBtn.tooltip('enable');
+            audioBtn.tooltip('show');
+            errors = true;
 
-        // send post request to app.js through jQuery
-        $.ajax({
-            url: '/api/voiceLogin',
-            type: 'POST',
-            data: {
-                name: $("#name").val(),
-                audio: voice,
-            },
-            success: function (response) {
-                console.log(response);
-                if (response.startsWith('[VOICE MATCH]')) {
-                    voiceMatch = true;
-                } else {
-                    voiceMatch = false;
+            audioBtn.on('hidden.bs.tooltip', function() {
+                audioBtn.tooltip('disable');
+            });
+        }
+
+        if(face.length === 0) {
+            captureBtn.tooltip('enable');
+            captureBtn.tooltip('show');
+            errors = true;
+
+            captureBtn.on('hidden.bs.tooltip', function() {
+                captureBtn.tooltip('disable');
+            });
+        }
+
+        if(!errors) {
+            window.alert("Verifying user... this may take a moment");
+            loginBtn.attr("disabled", true);
+
+            // send post request to app.js through jQuery
+            $.ajax({
+                url: '/api/faceLogin',
+                type: 'POST',
+                data: {
+                    name: $("#name").val(),
+                    image: face,
+                    model: './models/' + $("#name").val(),
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.startsWith('[FACE MATCH]')) {
+                        faceMatch = true;
+                    } else {
+                        faceMatch = false;
+                    }
+                    // since face comparison takes longer than voice, check matches upon completion of face recognition
+                    if(faceMatch === true && voiceMatch === true) {
+                        window.alert("[ACCESS GRANTED] Both face and voice of login request match");
+                    }
+                    else {
+                        window.alert("[ACCESS DENIED] Did not have a match for both face and voice");
+                        location.assign("/");
+                    }
+                },
+                error: function (exception) {
+                    console.log(exception);
+                    if (exception.responseJSON) {
+                        let msg = exception.responseJSON.error;
+                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                    }
                 }
-            },
-            error: function (exception) {
-                console.log(exception);
-                if (exception.responseJSON) {
-                    let msg = exception.responseJSON.error;
-                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+            });
+
+            // send post request to app.js through jQuery
+            $.ajax({
+                url: '/api/voiceLogin',
+                type: 'POST',
+                data: {
+                    name: $("#name").val(),
+                    audio: voice,
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.startsWith('[VOICE MATCH]')) {
+                        voiceMatch = true;
+                    } else {
+                        voiceMatch = false;
+                    }
+                },
+                error: function (exception) {
+                    console.log(exception);
+                    if (exception.responseJSON) {
+                        let msg = exception.responseJSON.error;
+                        document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
 
