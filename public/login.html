@@ -72,7 +72,7 @@
                         <div class="collapse" id="faceID">
                             <div class="row mb-2">
                                 <div class="col d-flex justify-content-center align-items-center">
-                                    <video id="loginVideo"></video>
+                                    <video id="loginVideo" style="border-radius: 12px"></video>
                                     <div id="flash"></div>
                                     <div id="status" class="font-weight-bold"></div>
                                 </div>
@@ -164,8 +164,8 @@
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', function (event) {
-                $("#notifTitle").text(event.data.title)
-                $("#notifBody").text(event.data.body)
+                $("#notifTitle").text(event.data.title);
+                $("#notifBody").text(event.data.body);
                 $("#notification").toast('show')
             });
         }

@@ -1,5 +1,5 @@
 // Video Element parameters
-var width = 320;    // We will scale the photo width to this
+var width = 520;    // This will scale the photo width to this
 var height = 0;     // This will be computed based on the input stream
 
 // State Variables
@@ -164,11 +164,12 @@ function startup() {
         ev.preventDefault();
     });
 
-    // todo add tooltip functionality to indicate if name does not exist in users
     loginBtn.addEventListener('click', function (ev) {
         // Check for errors in form data
         let name = $("#name");
         let errors = false;
+        var faceMatch = false;
+        var voiceMatch = false;
 
         // if the username is too short or contains spaces throw error
         if (name.val().length < 3 || hasWhiteSpace(name.val())) {
@@ -193,22 +194,27 @@ function startup() {
 
         // send post request to app.js through jQuery
         $.ajax({
-            url: '/api/login',
+            url: '/api/faceLogin',
             type: 'POST',
             data: {
                 name: $("#name").val(),
                 image: face,
                 model: './models/' + $("#name").val(),
-                audio: voice,
             },
             success: function (response) {
                 console.log(response);
-                window.alert(response);
-                if (response.startsWith('"[ACCESS GRANTED]')) {
-                    console.log("Move to next page")
+                if (response.startsWith('[FACE MATCH]')) {
+                    faceMatch = true;
                 } else {
-                    console.log("Move to home page ")
-                    //location.assign("/")
+                    faceMatch = false;
+                }
+                // since face comparison takes longer than voice, check matches upon completion of face recognition
+                if(faceMatch === true && voiceMatch === true) {
+                    window.alert("[ACCESS GRANTED] Both face and voice of login request match");
+                }
+                else {
+                    window.alert("[ACCESS DENIED] Did not have a match for both face and voice");
+                    location.assign("/");
                 }
             },
             error: function (exception) {
@@ -218,7 +224,32 @@ function startup() {
                     document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                 }
             }
-        })
+        });
+
+        // send post request to app.js through jQuery
+        $.ajax({
+            url: '/api/voiceLogin',
+            type: 'POST',
+            data: {
+                name: $("#name").val(),
+                audio: voice,
+            },
+            success: function (response) {
+                console.log(response);
+                if (response.startsWith('[VOICE MATCH]')) {
+                    voiceMatch = true;
+                } else {
+                    voiceMatch = false;
+                }
+            },
+            error: function (exception) {
+                console.log(exception);
+                if (exception.responseJSON) {
+                    let msg = exception.responseJSON.error;
+                    document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
+                }
+            }
+        });
     });
 
 
@@ -381,34 +412,6 @@ function startup() {
             this.value = this.value.replace(/\s/g, "");
         }
     });
-
-// function takepicture() {
-//     if (pictures.length < 10) {
-//         var context = canvas.getContext('2d');
-//         if (width && height) {
-//             canvas.width = width;
-//             canvas.height = height;
-//             context.drawImage(video, 0, 0, width, height);
-//         } else {
-//             clearphoto();
-//         }
-
-//         pictures.push(canvas.toDataURL('image/jpg'))
-//         progress.width(pictures.length / 10 * 100 + "%")
-//         count.html(pictures.length + "/10 Image")
-
-//         flash.removeClass('show');
-//         flash.addClass('show')
-//         flash.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
-//             function (e) {
-//                 flash.removeClass('show');
-//             });
-//     }
-//     if (pictures.length >= 10) {
-//         $("#capture").attr("disabled", true);
-//     }
-// }
 }
-
 
 window.addEventListener('load', startup, false);

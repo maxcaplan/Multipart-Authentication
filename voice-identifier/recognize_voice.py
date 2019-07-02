@@ -63,13 +63,10 @@ def recognize_voice(name):
     # if log_likelihood is greater than threshold grant access
     if log_likelihood >= threshold:
         authentication = True
+        print("[VOICE MATCH] Voice matches the specified user")
     else:
         authentication = False
-
-    if authentication:
-        print("[ACCESS GRANTED] Voice matches the specified user")
-    else:
-        print("[ACCESS DENIED] Voice does not match the specified user")
+        print("[VOICE CONFLICT] Voice does not match the specified user")
     return authentication
 
 

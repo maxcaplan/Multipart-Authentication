@@ -9,37 +9,50 @@ import io
 
 import os, random
 
-print("TensorFlow version is " + str(tf.__version__))
+# set threshold for accuracy of face recognition
+threshold = 35
 
 # load json data from node
 lines = sys.stdin.readline()
 data = json.loads(lines)
 
-# load model
-model = tf.keras.models.load_model(data['model'])
-print("model loaded!")
-model.summary()
 
-# convert data url to byte like object
-img64 = str.encode(data['image'])
+def predict():
+    # load model
+    model = tf.keras.models.load_model(data['model'])
 
-# if img64 missing padding, add padding to base64 file
-missing_padding = len(data) % 4
-if missing_padding:
-    img64 += b'='* (4 - missing_padding)
+    # convert data url to byte like object
+    img64 = str.encode(data['image'])
 
-# decode image data
-decode = base64.b64decode(img64)
+    # if img64 missing padding, add padding to base64 file
+    missing_padding = len(data) % 4
+    if missing_padding:
+        img64 += b'='* (4 - missing_padding)
 
-# open decoded data
-imgObj = Image.open(io.BytesIO(decode))
+    # decode image data
+    decode = base64.b64decode(img64)
 
-# convert to color numpy array
-image = cv2.cvtColor(np.array(imgObj), cv2.COLOR_BGR2RGB)
+    # open decoded data
+    imgObj = Image.open(io.BytesIO(decode))
 
-resize = cv2.resize(image, (160, 160))
-img = resize[np.newaxis, :, :, :]
+    # convert to color numpy array
+    image = cv2.cvtColor(np.array(imgObj), cv2.COLOR_BGR2RGB)
 
-# make prediction
-prediction = model.predict(img, steps=1)
-print("Likelihood that this is " + data['name'] + ": " + str(prediction[0][0] * 100) + "%")
+    resize = cv2.resize(image, (160, 160))
+    img = resize[np.newaxis, :, :, :]
+
+    # make prediction
+    prediction = model.predict(img, steps=1)
+    percentage = prediction[0][0] * 100
+
+    if percentage >= threshold:
+        authentication = True
+        print("[FACE MATCH] Face detected is predicted to match " + data['name'] + "'s")
+    else:
+        authentication = False
+        print("[FACE CONFLICT] Face detected does not match " + data['name'] + "'s")
+    return authentication
+
+
+if __name__ == '__main__':
+    predict()
