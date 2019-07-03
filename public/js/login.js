@@ -213,7 +213,6 @@ function startup() {
         }
 
         if(!errors) {
-            window.alert("Verifying user... this may take a moment");
             loginBtn.attr("disabled", true);
 
             // send post request to app.js through jQuery
@@ -274,6 +273,7 @@ function startup() {
                     }
                 }
             });
+            window.alert("Verifying user... this may take a moment");
         }
     });
 

@@ -20,7 +20,7 @@ CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
-threshold = -42.6   # subject to change later in development (Comparison for log_likelihood)
+threshold = -40   # subject to change later in development (Comparison for log_likelihood)
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()

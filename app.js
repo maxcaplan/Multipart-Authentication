@@ -107,12 +107,12 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             })
         });
 
-        app.post('/api/data', function (req, res) {
+        app.post('/api/signup', function (req, res) {
             var subscription = false;
             var payload = false;
             var host;
 
-            if(server.address().address = "::") {
+            if(server.address().address === "::") {
                 host = 'localhost'
             } else {
                 host = server.address().address
@@ -134,17 +134,21 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
 
             db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
                 if (err) return console.log(err);
-
-                if (results === false) {
+                if (results.length === 0) {
+                    console.log("Creating new directory in Database for user");
                     let parentDir = "./users/" + req.body.name + "/";
                     let trainDir = parentDir + "training/";
                     let validationDir = parentDir + "validation/";
+                    let audioDir = parentDir + "audio/";
+                    let gmmDir = parentDir + "gmm-model/";
 
                     let data = {
                         name: req.body.name,
                         trainDir: trainDir,
                         validationDir: validationDir,
                         modelDir: "models/" + req.body.name + "/",
+                        audioDir: audioDir,
+                        gmmDir: gmmDir,
                         subscription: subscription,
                     };
 
@@ -152,16 +156,16 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         fs.mkdirSync(parentDir);
                         fs.mkdirSync(validationDir);
                         fs.mkdirSync(trainDir);
+                        fs.mkdirSync(audioDir);
+                        fs.mkdirSync(gmmDir);
                         fs.mkdirSync(validationDir + "user/");
                         fs.mkdirSync(trainDir + "user/");
                         fs.mkdirSync(validationDir + "not/");
                         fs.mkdirSync(trainDir + "not/");
-                        fs.mkdirSync(parentDir + "audio/");
-                        fs.mkdirSync(parentDir + "gmm-model/");
                     }
 
                     for (let i = 0; i < req.body.audio.length; i++) {
-                        fs.writeFileSync(parentDir + 'audio/' + (i + 1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
+                        fs.writeFileSync(audioDir + (i + 1).toString() + '.wav', Buffer.from(req.body.audio[i].toString().replace('data:audio/wav;base64,', ''), 'base64'));
                     }
 
                     for (let i = 0; i < req.body.data.length; i++) {
@@ -204,9 +208,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                                             console.log("Training complete");
                                             db.collection('users').insertOne(data, (err, result) => {
                                                 if (err) return console.log(err);
-
                                                 console.log('saved to database');
-
                                                 if (subscription !== false) {
                                                     console.log("Sending Notification");
                                                     webPush.sendNotification(subscription, payload).catch(error => {

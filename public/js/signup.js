@@ -44,13 +44,13 @@ function startup() {
     flash = $("#flash");
     captureBtn = $('#capture');
     switchBtn = document.getElementById('switch');
-    uploadBtn = document.getElementById('upload');
+    uploadBtn = $("#upload");
     audioBtn = $("#audio");
     load = $('#modelLoad');
     notificationBtn = document.getElementById('notificationBtn');
     noThanksBtn = document.getElementById('noThanksBtn');
 
-    uploadBtn.disabled = true;
+    uploadBtn.attr("disabled", true);
     captureBtn.disabled = true;
     audioBtn.disabled = true;
 
@@ -86,7 +86,7 @@ function startup() {
                 $("#loadWrapper").addClass("collapse-anim");
                 $("#loadLabel").hide();
                 collapse.collapse('show');
-                uploadBtn.disabled = false;
+                uploadBtn.attr("disabled", false);
             }).then(() => {
                 setInterval(() => {
                     if (capturing && pictures.length < pNum) {
@@ -132,7 +132,7 @@ function startup() {
                             capturing = false;
                             switchBtn.disabled = false;
                             audioBtn.attr("disabled", false);
-                            uploadBtn.disabled = false;
+                            uploadBtn.attr("disabled", false);
                         }
                     }
 
@@ -141,7 +141,7 @@ function startup() {
                             capturing = false;
                             switchBtn.disabled = false;
                             audioBtn.attr("disabled", false);
-                            uploadBtn.disabled = false;
+                            uploadBtn.attr("disabled", false);
                         }
                         captureBtn.html("Done!");
                         captureBtn.attr("disabled", true);
@@ -158,12 +158,12 @@ function startup() {
         if (capturing) {
             switchBtn.disabled = true;
             audioBtn.attr("disabled", true);
-            uploadBtn.disabled = true;
+            uploadBtn.attr("disabled", false);
             captureBtn.html(pictures.length + "/" + pNum + " Images <span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
         } else {
             switchBtn.disabled = false;
             audioBtn.attr("disabled", false);
-            uploadBtn.disabled = false;
+            uploadBtn.attr("disabled", false);
             captureBtn.html("Start Scanning Face");
         }
         ev.preventDefault();
@@ -174,7 +174,7 @@ function startup() {
         ev.preventDefault();
     }, false);
 
-    uploadBtn.addEventListener('click', function (ev) {
+    uploadBtn.click(function (ev) {
         // Check for errors in form data
         let name = $("#name");
         let errors = false;
@@ -253,7 +253,7 @@ function startup() {
 
     audioBtn.click(function (ev) {
         captureBtn.attr("disabled", true);
-        uploadBtn.disabled = true;
+        uploadBtn.attr("disabled", true);
         recordVoice();
         ev.preventDefault();
     });
@@ -277,13 +277,13 @@ function startup() {
                     // wait for the service worker to become activated
                     if (serviceWorker) {
                         console.log("sw current state", serviceWorker.state);
-                        if (serviceWorker.state == "activated") {
+                        if (serviceWorker.state === "activated") {
                             //If push subscription wasn't done yet do it here
                             subscribe(reg)
                                 .then(subscription => {
                                     $.ajax({
-                                        url: '/api/data',    //api url
-                                        type: 'POST',   //HTTP method
+                                        url: '/api/signup',    //api url
+                                        type: 'POST',          //HTTP method
                                         data: {
                                             name: $("#name").val(),
                                             data: pictures,
@@ -308,12 +308,12 @@ function startup() {
                         }
 
                         serviceWorker.addEventListener("statechange", function (e) {
-                            if (e.target.state == "activated") {
+                            if (e.target.state === "activated") {
                                 subscribe(reg)
                                     .then(subscription => {
                                         $.ajax({
-                                            url: '/api/data',    //api url
-                                            type: 'POST',   //HTTP method
+                                            url: '/api/signup',    //api url
+                                            type: 'POST',          //HTTP method
                                             data: {
                                                 name: $("#name").val(),
                                                 data: pictures,
@@ -344,7 +344,7 @@ function startup() {
 
     noThanksBtn.addEventListener('click', function (ev) {
         $.ajax({
-            url: '/api/data',    //api url
+            url: '/api/signup',    //api url
             type: 'POST',   //HTTP method
             data: {
                 name: $("#name").val(),
@@ -405,7 +405,7 @@ function recordVoice() {
                     if (pictures.length < pNum) {
                         captureBtn.attr("disabled", false);
                     }
-                    uploadBtn.disabled = false;
+                    uploadBtn.attr("disabled", false);
                     console.log("Recording Finished");
                     $("#audio").html("Recording Finished (" + (voice.length + 1) + "/3)");
                     recording = !recording;
@@ -418,7 +418,7 @@ function recordVoice() {
         if (pictures.length < pNum) {
             captureBtn.attr("disabled", false);
         }
-        uploadBtn.disabled = false;
+        uploadBtn.attr("disabled", false);
     }
     else {
         console.log("Recording already in progress, cannot record multiple files at once");
