@@ -10,7 +10,7 @@ import io
 import os, random
 
 # set threshold for accuracy of face recognition
-threshold = 35
+threshold = 75      # subject to change as testing continues
 
 # load json data from node
 lines = sys.stdin.readline()
@@ -47,10 +47,10 @@ def predict():
 
     if percentage >= threshold:
         authentication = True
-        print("[FACE MATCH] Face detected is predicted to match " + data['name'] + "'s")
+        print("[FACE MATCH] Face detected is predicted to match " + data['name'] + "'s ==> " + str(percentage))
     else:
         authentication = False
-        print("[FACE CONFLICT] Face detected does not match " + data['name'] + "'s")
+        print("[FACE CONFLICT] Face detected does not match " + data['name'] + "'s ==> " + str(percentage))
     return authentication
 
 

@@ -60,7 +60,7 @@ def train_gmm(name):
             features = np.vstack((features, vector))
 
         # when features of the 3 speaker files are concatenated, then train the model
-        if count == 3:
+        if count == 5:
             gmm = GMM(n_components=16, max_iter=200, covariance_type='diag', n_init=3)
             gmm.fit(features)
 

@@ -20,7 +20,7 @@ CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
-threshold = -40   # subject to change later in development (Comparison for log_likelihood)
+threshold = -42   # subject to change later in development (Comparison for log_likelihood)
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -63,10 +63,10 @@ def recognize_voice(name):
     # if log_likelihood is greater than threshold grant access
     if log_likelihood >= threshold:
         authentication = True
-        print("[VOICE MATCH] Voice matches the specified user")
+        print("[VOICE MATCH] Voice matches the specified user ==> " + str(log_likelihood))
     else:
         authentication = False
-        print("[VOICE CONFLICT] Voice does not match the specified user")
+        print("[VOICE CONFLICT] Voice does not match the specified user ==> " + str(log_likelihood))
     return authentication
 
 

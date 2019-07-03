@@ -27,7 +27,7 @@ var voice = [];
 var constraints = null;
 var camIndex = 0;
 var pNum = 20;
-var aNum = 3;
+var aNum = 5;
 
 let audioblob = null;
 
@@ -407,12 +407,12 @@ function recordVoice() {
                     }
                     uploadBtn.attr("disabled", false);
                     console.log("Recording Finished");
-                    $("#audio").html("Recording Finished (" + (voice.length + 1) + "/3)");
+                    $("#audio").html("Recording Finished (" + (voice.length + 1) + "/5)");
                     recording = !recording;
                 }, 3000);
             });
     }
-    else if (voice.length > 2) {
+    else if (voice.length > 4) {
         console.log("Have already collected the correct number of recordings");
         $("#audio").html("Total recordings have already been collected");
         if (pictures.length < pNum) {
