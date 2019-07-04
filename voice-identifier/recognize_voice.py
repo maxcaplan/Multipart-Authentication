@@ -20,7 +20,7 @@ CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
-threshold = -42   # subject to change later in development (Comparison for log_likelihood)
+threshold = 0.0125   # subject to change later in development (Comparison for log_likelihood)
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -58,15 +58,15 @@ def recognize_voice(name):
     vector = extract_features(audio, sr)
 
     # get the likelihood score that 'loginAttempt.wav' matches the GMM (outputs a log() value of the score)
-    log_likelihood = model.score(vector)
+    prob = model.predict_proba(vector)[:,1].mean()
 
     # if log_likelihood is greater than threshold grant access
-    if log_likelihood >= threshold:
+    if prob >= threshold:
         authentication = True
-        print("[VOICE MATCH] Voice matches the specified user ==> " + str(log_likelihood))
+        print("[VOICE MATCH] Voice matches the specified user ==> " + str(prob))
     else:
         authentication = False
-        print("[VOICE CONFLICT] Voice does not match the specified user ==> " + str(log_likelihood))
+        print("[VOICE CONFLICT] Voice does not match the specified user ==> " + str(prob))
     return authentication
 
 
