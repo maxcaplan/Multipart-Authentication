@@ -234,6 +234,7 @@ function startup() {
                     // since face comparison takes longer than voice, check matches upon completion of face recognition
                     if(faceMatch === true && voiceMatch === true) {
                         window.alert("[ACCESS GRANTED] Both face and voice of login request match");
+                        location.assign("/accessGranted.html");
                     }
                     else {
                         window.alert("[ACCESS DENIED] Did not have a match for both face and voice");

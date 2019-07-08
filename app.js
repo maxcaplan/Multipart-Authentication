@@ -242,7 +242,6 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         });
 
         app.get('*', function (req, res) {
-            // res.send('page not found');
             res.redirect('/')
         });
 
@@ -278,10 +277,6 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                     }
                 }
 
-                // for multiple face comparison images
-                /*for(let i=0; i<=req.image.length; i++) {
-                    let img = "./users/" + req.body.name + "/faceComparison/loginAttempt" + i + ".png";
-                }*/
                 let model = req.body.model + "/" + fs.readdirSync(req.body.model);
                 let img = fs.readFileSync("./users/" + req.body.name + "/faceComparison/loginAttempt.png");
                 let faceShell = new PythonShell('./python/predict.py');

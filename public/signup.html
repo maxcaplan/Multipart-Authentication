@@ -120,7 +120,8 @@
                                     <div class="btn-group">
                                         <button id="capture" class="btn btn-info" data-toggle="tooltip"
                                             data-placement="top" title="Scan Face">Start Scanning Face</button>
-                                        <button id="switch" class="btn btn-secondary"><i
+                                        <button id="switch" class="btn btn-secondary" data-toggle="tooltip"
+                                                data-placement="top" title="Switch Cameras"><i
                                                 class="fas fa-exchange-alt fa-lg"></i></button>
                                     </div>
                                 </div>
@@ -149,12 +150,12 @@
                         <div class="row mb-3">
                             <div class="col text-center">
                                 <a class="btn btn-block btn-secondary" href="/">
-                                    back
+                                    Back
                                 </a>
                             </div>
                             <div class="col text-center">
                                 <button id="upload" class="btn btn-block btn-primary" disabled>
-                                    submit
+                                    Submit
                                 </button>
                             </div>
                         </div>
@@ -217,7 +218,6 @@
         data-autohide="false"
         style="position: fixed; bottom: 0; right: 0; border-radius: 12px; min-width: 40vmin; max-width: 100%;">
         <div class="toast-header p-3">
-            <!-- <img src="./assets/icons/apple-touch-icon.png" class="rounded mr-2" width="30" alt="logo"> -->
             <h5 id="notifTitle" class="mr-auto my-0">Title</h5>
             <button type="button" class="ml-3 mb-1 close" data-dismiss="toast" aria-label="Close">
                 <i class="fas fa-times fa-sm"></i>
