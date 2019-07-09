@@ -225,7 +225,7 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         }
                     });
                 } else {
-                    res.status(409).send("account already exists");
+                    res.status(409).send("Account already exists");
                 }
             })
         });
