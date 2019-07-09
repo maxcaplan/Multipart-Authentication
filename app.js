@@ -269,11 +269,13 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
         let server = app.listen(port, () => console.log(`Listening on port ${port}`));
 
         app.post('/api/faceLogin', (req, res) => {
+            var exception = false;
             db.collection('users').find({"name": req.body.name}).toArray(function(err, results) {
-                if (err) console.log(err);
-                if (results.length === 0) {
+                //if (err) console.log(err);
+                if (results.length == 0) {
                     console.log("Account does not exist, could not sign into specified name");
-                    res.status(404).send("Account does not exist, could not sign into specified name")
+                    res.status(404).send("Account does not exist, could not sign into specified name");
+                    exception = true;
                 }
                 else{
                     // check for existing directory and/or face comparison files and replace if need be
@@ -297,25 +299,28 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         console.log("New 'loginAttempt.png' has been successfully added to the database")
                     }
                 }
-
-                let model = req.body.model + "/" + fs.readdirSync(req.body.model);
-                let img = fs.readFileSync("./users/" + req.body.name + "/faceComparison/loginAttempt.png");
-                let faceShell = new PythonShell('./python/predict.py');
-                faceShell.send(JSON.stringify({name: req.body.name,
-                    image: Buffer.from(img).toString('base64'), model: model}));
-                faceShell.on('message', (message) => {
-                    console.log(message);
-                    res.send(message)
-                });
+                if (exception === false) {
+                    let model = req.body.model + "/" + fs.readdirSync(req.body.model);
+                    let img = fs.readFileSync("./users/" + req.body.name + "/faceComparison/loginAttempt.png");
+                    let faceShell = new PythonShell('./python/predict.py');
+                    faceShell.send(JSON.stringify({name: req.body.name,
+                        image: Buffer.from(img).toString('base64'), model: model}));
+                    faceShell.on('message', (message) => {
+                        console.log(message);
+                        res.send(message)
+                    });
+                }
             });
         });
 
         app.post('/api/voiceLogin', (req, res) => {
+            var exception = false;
             db.collection('users').find({"name": req.body.name}).toArray(function(err, results) {
                 if (err) console.log(err);
                 if (results.length === 0) {
                     console.log("Account does not exist, could not sign into specified name");
-                    res.status(404).send("Account does not exist, could not sign into specified name")
+                    res.status(404).send("Account does not exist, could not sign into specified name");
+                    exception = true;
                 }
                 else{
                     // check for existing directory and/or audio comparison files and replace if need be
@@ -339,12 +344,14 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
                         console.log("New 'loginAttempt.wav' has been successfully uploaded to the database")
                     }
                 }
-                let voiceShell = new PythonShell('./voice-identifier/recognize_voice.py');
-                voiceShell.send(JSON.stringify( {name: req.body.name}));
-                voiceShell.on('message', (message) => {
-                    console.log(message);
-                    res.send(message);
-                });
+                if (exception === false) {
+                    let voiceShell = new PythonShell('./voice-identifier/recognize_voice.py');
+                    voiceShell.send(JSON.stringify( {name: req.body.name}));
+                    voiceShell.on('message', (message) => {
+                        console.log(message);
+                        res.send(message);
+                    });
+                }
             });
         });
     }

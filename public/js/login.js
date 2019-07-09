@@ -247,10 +247,14 @@ function startup() {
                 },
                 error: function (exception) {
                     console.log(exception);
+                    if (exception.responseText.startsWith("Account does not exist, ")){
+                        window.alert("Account does not exist, could not sign into specified name");
+                    }
                     if (exception.responseJSON) {
                         let msg = exception.responseJSON.error;
                         document.getElementById("errors").innerHTML = "<div class='alert alert-danger animated shake' role='alert'>" + msg + "</div>"
                     }
+                    location.assign('/');
                 }
             });
 
