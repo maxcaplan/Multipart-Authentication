@@ -24,6 +24,9 @@
           integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
     <script src="./js/accessGranted.js"></script>
+    <script>
+        document.getElementsByTagName('html')[0].style.visibility = 'hidden'
+    </script>
 
     <style>
         .tooltip-inner {
@@ -45,7 +48,7 @@
     </style>
 </head>
 
-<body>
+<body onload="if(document.referrer == '')location.assign('/'); else document.getElementsByTagName('html')[0].style.visibility = 'visible';">
     <style type="text/css">
     </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript" ></script>
