@@ -52,6 +52,12 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 12px;
 }
 
+.delBtn {
+    border-radius: 12px;
+    background-color: red;
+    color: white;
+}
+
 .circle-btn {
     font-size: 4em;
     border-radius: 100%;

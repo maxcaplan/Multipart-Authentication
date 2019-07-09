@@ -234,6 +234,10 @@ function startup() {
                     // since face comparison takes longer than voice, check matches upon completion of face recognition
                     if(faceMatch === true && voiceMatch === true) {
                         window.alert("[ACCESS GRANTED] Both face and voice of login request match");
+
+                        // use window.localStorage to pass the username through to access granted page
+                        window.localStorage.setItem("username", $("#name").val());
+
                         location.assign("/accessGranted.html");
                     }
                     else {

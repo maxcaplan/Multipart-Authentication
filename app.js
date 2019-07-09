@@ -230,6 +230,27 @@ MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, (err, client)
             })
         });
 
+        app.post('/api/deleteUser', (req, res) =>{
+            let name = req.body.username;
+            if (fs.existsSync("./users/" + name)) {
+                console.log("Deleting user: " + name);
+                res.write("Deleting user: " + name + '\n');
+                rimraf.sync("./users/" + name);
+                console.log("Users images deleted");
+                res.write("User images deleted\n");
+                rimraf.sync("./models/" + name);
+                console.log("Users models deleted");
+                res.write("User models deleted\n");
+                db.collection('users').deleteOne({ "name": name });
+                console.log("User removed from database");
+                res.write("User removed from database\n");
+            } else {
+                console.log("User does not exist \naborted");
+                res.write("User does not exist \naborted");
+            }
+            res.end()
+        });
+
         app.post('/api/checkUser', (req, res) => {
             db.collection('users').find({ "name": req.body.name }).toArray(function (err, results) {
                 if (err) return console.log(err);
