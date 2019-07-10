@@ -441,11 +441,10 @@ function switchcamera() {
                 console.log("Camera index 1 is active");
                 constraints = { audio: false, video: { width: 1920, height: 1080, deviceId: { exact: listDevices[1].deviceId } } };
                 camIndex = 1;
-
             }
             else if ({ video: { deviceId: { exact: listDevices[0].deviceId } } } && camIndex === 1) {
                 console.log("Camera index 0 is active");
-                constraints = { audio: false, video: { width: 1920, height: 1080, deviceId: { extract: listDevices[0].deviceId } } };
+                constraints = { audio: false, video: { deviceId: { extract: listDevices[0].deviceId } } };
                 camIndex = 0;
             }
         }
