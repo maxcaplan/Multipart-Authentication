@@ -11,7 +11,7 @@ DATABASE_DIR = ROOT_DIR + '/users/'
 # Normalize the sound of all audio files for training data
 def normalizeSoundTraining(username):
     i = 0
-    avg_amplitude = -15.0  # measured in dBFS (decibels relative to full scale)
+    avg_amplitude = -20.0  # measured in dBFS (decibels relative to full scale)
     wav_files = os.listdir(DATABASE_DIR + username + '/audio/')
     for wav in wav_files:
         i = i + 1
@@ -23,7 +23,7 @@ def normalizeSoundTraining(username):
 
 # Normalize the sound of the audio file created in attempts to login
 def normalizeSoundRecognizing(username):
-    avg_amplitude = -15.0  # measured in dBFS (decibels relative to full scale)
+    avg_amplitude = -20.0  # measured in dBFS (decibels relative to full scale)
     audio = AS.from_file(DATABASE_DIR + username + '/audioComparison/loginAttempt.wav', "wav")
     change_in_dBFS = avg_amplitude - audio.dBFS
     normalized_audio = audio.apply_gain(change_in_dBFS)
@@ -48,7 +48,7 @@ def eliminateAmbienceTraining(username):
 
 
 # eliminating the ambient noise in the recognition audio file
-def eliminateAmbienceRecognition(username):
+def eliminateAmbienceRecognizing(username):
     recognizer = sr.Recognizer()
     audio_file = sr.AudioFile(DATABASE_DIR + username + '/audioComparison/loginAttempt.wav')
     with audio_file as source:

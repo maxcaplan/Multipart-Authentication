@@ -8,7 +8,7 @@ from PIL import Image
 import io
 
 # set threshold for accuracy of face recognition
-threshold = 75      # subject to change as testing continues
+threshold = 85      # subject to change as testing continues
 
 # load json data from node
 lines = sys.stdin.readline()

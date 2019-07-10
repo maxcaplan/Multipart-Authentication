@@ -5,10 +5,10 @@ import sys
 import json
 import pickle
 import warnings
-from filetype import filetype
+import filetype
 from scipy.io.wavfile import read
 
-from data_processing import normalizeSoundRecognition, eliminateAmbienceRecognition
+from data_processing import normalizeSoundRecognizing, eliminateAmbienceRecognizing
 from feature_extraction import extract_features
 
 warnings.simplefilter("ignore")
@@ -21,7 +21,7 @@ CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 4
-threshold = 0.0125   # subject to change later in development (Comparison for log_likelihood)
+threshold = 0.08   # subject to change later in development (Comparison for log_likelihood)
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -30,13 +30,10 @@ name = str(data_passed['name'])
 
 
 def recognize_voice(name):
-    # data preprocessing
-    normalizeSoundRecognition(name)
-    eliminateAmbienceRecognition(name)
-
     # setting paths to database directory and .gmm files in models
     test_file_dir = DATABASE_DIR + name + '/audioComparison/'
     modelpath = DATABASE_DIR + str(name) + "/gmm-model/" + str(name) + ".gmm"
+
     if os.path.exists(modelpath):
         model = pickle.load(open(modelpath, 'rb'))
     else:
@@ -55,6 +52,10 @@ def recognize_voice(name):
             subprocess.call(command, shell=True)
             os.remove(path)
             os.rename('./' + fname, path)
+
+    # data preprocessing
+    normalizeSoundRecognizing(name)
+    eliminateAmbienceRecognizing(name)
 
     # read the test files
     sr, audio = read(test_file_dir + "loginAttempt.wav")

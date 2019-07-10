@@ -32,10 +32,6 @@ def train_gmm(name):
     source = DATABASE_DIR + name + '/audio/'
     destination = DATABASE_DIR + name + '/gmm-model/'
 
-    # data preprocessing
-    normalizeSoundTraining(name)
-    eliminateAmbienceTraining(name)
-
     count = 1
 
     for path in os.listdir(source):
@@ -51,10 +47,15 @@ def train_gmm(name):
             os.remove(path)
             os.rename('./' + fname, path)
 
+    # data preprocessing
+    normalizeSoundTraining(name)
+    eliminateAmbienceTraining(name)
+
+    for path in os.listdir(source):
         features = np.array([])
 
         # reading audio files of speaker
-        sr, audio = read(path)
+        sr, audio = read(source + path)
 
         # extract 40 dim MFCC and delta MFCC features
         vector = extract_features(audio, sr)
@@ -64,9 +65,9 @@ def train_gmm(name):
         else:
             features = np.vstack((features, vector))
 
-        # when features of the 3 speaker files are concatenated, then train the model
+        # when features of the 5 speaker files are concatenated, then train the model
         if count == 5:
-            gmm = GMM(n_components=16, max_iter=200, covariance_type='diag', n_init=3)
+            gmm = GMM(n_components=16, max_iter=200, covariance_type='diag', n_init=5)
             gmm.fit(features)
 
             # save the trained Gaussian Model
