@@ -3,15 +3,16 @@ import os
 import time
 import sys
 import json
-import argparse
 import matplotlib.pyplot as plt
 
 lines = sys.stdin.readline()
 data = json.loads(lines)
 
+
 ##################
 #Image Processing#
 ##################
+
 
 train_dir = str(data['trainingDir'])
 validation_dir = str(data["validationDir"])
@@ -42,12 +43,13 @@ validation_generator = validation_datagen.flow_from_directory(
     class_mode='binary')
 
 
-################
-#Model Building#
-################
+##################
+# Model Building #
+##################
+
 
 # check if input model exists
-if(data['model'] == None):
+if data['model'] is None:
     # create new model
     IMG_SHAPE = (image_size, image_size, 3)
 
@@ -58,9 +60,6 @@ if(data['model'] == None):
 
     # freeze base model
     base_model.trainable = False
-    # print("BASE MODEL:")
-    # base_model.summary()
-    # print("\n")
 
     # new model built from base model
     model = tf.keras.Sequential([
@@ -77,17 +76,14 @@ else:
     # load input model
     model = tf.keras.models.load_model(str(data['model']))
 
-# print("NEW MODEL")
-# model.summary()
-# print("\n")
 
+############
+# Training #
+############
 
-##########
-#Training#
-##########
 
 # Start with training the model with the base model frozen
-if(data["epochs"] == None):
+if data["epochs"] is None:
     epochs = 10
 else:
     epochs = int(data["epochs"])
@@ -124,7 +120,7 @@ tuneHistory = model.fit_generator(train_generator,
                                   validation_data=validation_generator,
                                   validation_steps=validation_steps)
 # save the model to the appropiate directory
-if(data['model'] == None):
+if data['model'] is None:
     date = time.time()
     print("saving new model to: ../models/" +
           str(data['name']) + "/" + str(date) + '.h5')
@@ -134,9 +130,11 @@ else:
     model.save(data['model'])
 
 
-##########
-#Plotting#
-##########
+############
+# Plotting #
+############
+
+
 if data['plot']:
     acc = history.history['acc']
     val_acc = history.history['val_acc']

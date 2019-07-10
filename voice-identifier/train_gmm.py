@@ -9,6 +9,7 @@ import json
 from scipy.io.wavfile import read
 from sklearn.mixture import GaussianMixture as GMM
 
+from data_processing import normalizeSoundTraining, eliminateAmbienceTraining
 from feature_extraction import extract_features
 
 # HYPERPARAMETERS
@@ -30,6 +31,10 @@ def train_gmm(name):
     # setting paths to database directory and .gmm files in models
     source = DATABASE_DIR + name + '/audio/'
     destination = DATABASE_DIR + name + '/gmm-model/'
+
+    # data preprocessing
+    normalizeSoundTraining(name)
+    eliminateAmbienceTraining(name)
 
     count = 1
 

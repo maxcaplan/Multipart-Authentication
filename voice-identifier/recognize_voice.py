@@ -8,6 +8,7 @@ import warnings
 from filetype import filetype
 from scipy.io.wavfile import read
 
+from data_processing import normalizeSoundRecognition, eliminateAmbienceRecognition
 from feature_extraction import extract_features
 
 warnings.simplefilter("ignore")
@@ -29,6 +30,10 @@ name = str(data_passed['name'])
 
 
 def recognize_voice(name):
+    # data preprocessing
+    normalizeSoundRecognition(name)
+    eliminateAmbienceRecognition(name)
+
     # setting paths to database directory and .gmm files in models
     test_file_dir = DATABASE_DIR + name + '/audioComparison/'
     modelpath = DATABASE_DIR + str(name) + "/gmm-model/" + str(name) + ".gmm"
@@ -58,7 +63,7 @@ def recognize_voice(name):
     vector = extract_features(audio, sr)
 
     # get the likelihood score that 'loginAttempt.wav' matches the GMM (outputs a log() value of the score)
-    prob = model.predict_proba(vector)[:,1].mean()
+    prob = model.predict_proba(vector)[:, 1].mean()
 
     # if log_likelihood is greater than threshold grant access
     if prob >= threshold:

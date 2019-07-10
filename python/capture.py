@@ -1,5 +1,4 @@
 import cv2
-import numpy
 import time
 
 cv2.namedWindow("preview")
@@ -20,7 +19,7 @@ while rval:
     width = frame.shape[1]
     height = frame.shape[0]
 
-    if width > height: 
+    if width > height:
         newWidth = height
         newHeight = height
     else:

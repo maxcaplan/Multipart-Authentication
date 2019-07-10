@@ -7,8 +7,6 @@ import sys
 from PIL import Image
 import io
 
-import os, random
-
 # set threshold for accuracy of face recognition
 threshold = 75      # subject to change as testing continues
 
