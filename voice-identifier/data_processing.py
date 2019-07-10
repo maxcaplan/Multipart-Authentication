@@ -3,7 +3,7 @@ import os
 import speech_recognition as sr
 from pydub import AudioSegment as AS
 
-
+# declaring key directories
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 DATABASE_DIR = ROOT_DIR + '/users/'
 
