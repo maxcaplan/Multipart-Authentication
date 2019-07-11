@@ -20,7 +20,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
-RECORD_SECONDS = 4
+RECORD_SECONDS = 3.5
 threshold = 0.20   # subject to change later in development
 
 # fetch data passed through PythonShell from app.js
@@ -54,8 +54,8 @@ def recognize_voice(name):
             os.rename('./' + fname, path)
 
     # data preprocessing
-    normalizeSoundRecognizing(name)
     eliminateAmbienceRecognizing(name)
+    normalizeSoundRecognizing(name)
 
     # read the test files
     sr, audio = read(test_file_dir + "loginAttempt.wav")

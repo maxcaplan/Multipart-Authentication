@@ -19,7 +19,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
-RECORD_SECONDS = 3
+RECORD_SECONDS = 3.5
 
 # fetch data passed through PythonShell from app.js
 lines = sys.stdin.readline()
@@ -48,8 +48,8 @@ def train_gmm(name):
             os.rename('./' + fname, path)
 
     # data preprocessing
-    normalizeSoundTraining(name)
     eliminateAmbienceTraining(name)
+    normalizeSoundTraining(name)
 
     for path in os.listdir(source):
         features = np.array([])
