@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +15,13 @@
     <meta name="msapplication-config" content="/assets/icons/browserconfig.xml">
     <meta name="theme-color" content="#6d6897">
 
-    <title>About</title>
+    <title>Help</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/90a18d65c3.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
-        integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
+          integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
@@ -46,15 +45,30 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <h1 class="display-3 text-center title">About</h1>
+                                <h1 class="display-3 text-center title">Help</h1>
                             </div>
                         </div>
                         <hr>
-                        <div class="col text-center">This is an experimental and educational project by Max Caplan and Will Macdonald throughout the duration of a summer internship.<br>
-                            <br>This project is implementing the use of machine learning through both computer vision and audio authentication for the purpose of developing a multi-step authentication process,
-                            with aims of creating a more reliable and secure login system.<br>
-                            <br>Please see our GitHub repository at <a href="https://github.com/Jellycream/Multipart-Authentication">Multipart-Authentication</a> for more information on the code and licensing.<br>
-                            Pull requests are welcome. We ask that for major changes, an issue is created to outline the details of the changes.
+                        <div class="col">Signup Instructions:<br>
+                            <div class="col">
+                                To begin the sign up process, click on the circular button with a pencil icon on the main screen titled "Authentication".<br>
+                                Upon loading the page, enter your name into the username bar <i>(Note that usernames should not contain spaces, hence the spacebar has been disabled)</i>.<br>
+                                Collecting images for the face detection system, if your device has more than one camera click on the switch cameras button (indicated by two arrows in opposite directions) to cycle through the available devices and find the proper camera facing the user.
+                                Once camera is facing user and image is clear, click the "Start Scanning Face" button and wait for the "Face Detected" indicator in the top left corner of the video to appear. Once this is visible images will begin to be collected.
+                                Once flashing of video canvas begins, look at the camera and stay still for the most accurate results. <br>
+                                The user will be required to state their name for audio detection in 5 separate 3 second recordings, with a 500 millisecond delay before speaking in order for the system to adjust for any background noise present in the recording. <br>
+                                Once all data is collected, click the "Submit" button and select whether you would or would not like to be notified upon completion of signup <i>(Note that training the model will take a few minutes)</i>. <br>
+                            </div>
+                        </div>
+                        <br><br>
+                        <div class="col">Login Instructions:<br>
+                            <div class="col">
+                                The login page can be accessed by clicking on the circular button with a person icon on the main screen titled "Authentication".<br>
+                                The login process is similar to that taken during the signup process. Once the model is done processing the signup data, you will be able to sign into your account.<br>
+                                Follow the same steps as the signup page for entering the username and selecting the appropriate camera. The only difference in the image and voice data collection is that there will only be one sample collected for comparison.
+                                For most accurate results, please stay still and speak clearly when attempting to login.<br>
+                                Once the image and audio clip have been collected, click on the "Login" button. There will be a popup indicating that verification has begun and that this step may take a moment. Please do not leave the page while verification is taking place, otherwise it will not continue.<br>
+                            </div>
                         </div>
                         <hr>
                         <div class="row mb-3">
@@ -79,8 +93,8 @@
 
     <!-- Notification -->
     <div id="notification" class="toast border-0 m-2" role="alert" aria-live="assertive" aria-atomic="true"
-        data-autohide="false"
-        style="position: fixed; bottom: 0; right: 0; border-radius: 12px; min-width: 40vmin; max-width: 100%;">
+         data-autohide="false"
+         style="position: fixed; bottom: 0; right: 0; border-radius: 12px; min-width: 40vmin; max-width: 100%;">
         <div class="toast-header p-3">
             <!-- <img src="./assets/icons/apple-touch-icon.png" class="rounded mr-2" width="30" alt="logo"> -->
             <h5 id="notifTitle" class="mr-auto my-0">Title</h5>
@@ -94,14 +108,14 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -113,5 +127,4 @@
         }
     </script>
 </body>
-
 </html>
