@@ -54,8 +54,8 @@ def recognize_voice(name):
             os.rename('./' + fname, path)
 
     # data preprocessing
-    eliminateAmbienceRecognizing(name)
     normalizeSoundRecognizing(name)
+    eliminateAmbienceRecognizing(name)
 
     # read the test files
     sr, audio = read(test_file_dir + "loginAttempt.wav")

@@ -302,8 +302,10 @@ function startup() {
                 .then(stream => {
                     const mediaRecorder = new MediaRecorder(stream);
                     mediaRecorder.start(0.25);
-                    $("#audio").html("Recording... (Please say your name)");
-                    console.log("Recording...");
+                    setTimeout(function() {
+                        $("#audio").html("Recording... (Please say your name)");
+                        console.log("Recording...");
+                    }, 500);
 
                     // once there are audio chunks available, push then to the audioChunks array
                     mediaRecorder.addEventListener("dataavailable", event => {
@@ -330,7 +332,7 @@ function startup() {
                         console.log("Recording Finished");
                         $("#audio").html("Recording Finished");
                         recording = !recording;
-                    }, 3000);
+                    }, 3500);
                 });
         }
         // if there is already one recording indicate that file has already been collected

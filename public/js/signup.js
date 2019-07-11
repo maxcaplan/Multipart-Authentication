@@ -382,8 +382,10 @@ function recordVoice() {
             .then(stream => {
                 const mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start(0.25);
-                $("#audio").html("Recording... (Please say your name)");
-                console.log("Recording...");
+                setTimeout(function() {
+                    $("#audio").html("Recording... (Please say your name)");
+                    console.log("Recording...");
+                }, 500);
 
                 mediaRecorder.addEventListener("dataavailable", event => {
                     audioChunks.push(event.data);
@@ -408,7 +410,7 @@ function recordVoice() {
                     console.log("Recording Finished");
                     $("#audio").html("Recording Finished (" + (voice.length + 1) + "/5)");
                     recording = !recording;
-                }, 3000);
+                }, 3500);
             });
     }
     else if (voice.length > 4) {

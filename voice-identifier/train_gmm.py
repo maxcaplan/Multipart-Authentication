@@ -48,8 +48,8 @@ def train_gmm(name):
             os.rename('./' + fname, path)
 
     # data preprocessing
-    eliminateAmbienceTraining(name)
     normalizeSoundTraining(name)
+    eliminateAmbienceTraining(name)
 
     for path in os.listdir(source):
         features = np.array([])
@@ -67,7 +67,7 @@ def train_gmm(name):
 
         # when features of the 5 speaker files are concatenated, then train the model
         if count == 5:
-            gmm = GMM(n_components=25, max_iter=300, covariance_type='diag', n_init=5)
+            gmm = GMM(n_components=18, max_iter=300, covariance_type='diag', n_init=5)
             gmm.fit(features)
 
             # save the trained Gaussian Model
