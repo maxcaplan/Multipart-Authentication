@@ -20,7 +20,7 @@
   "author": "Max Caplan",
   "license": "MIT",
   "dependencies": {
-    "@tensorflow/tfjs": "^1.1.2",
+    "@tensorflow/tfjs": "^1.2.2",
     "body-parser": "^1.19.0",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
